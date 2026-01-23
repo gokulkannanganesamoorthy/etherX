@@ -1,0 +1,510 @@
+INFO:     Started server process [64208]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:3000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:64310 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /api/Products HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Users HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=juice HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=apple HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64319 - "GET /products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=banana HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=banana HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Products HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Users HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=apple HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=green HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "POST /api/Products HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=green HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Users HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /rest/products/search?q=orange HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/2.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/apple_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST / HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /assets/public/favicon_1.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /assets/public/images/carousel/1.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=orange HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=banana HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/BasketItems HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "POST /assets/public/images/products/orange_juice.jpg HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Quantitys HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /api/Products HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "POST /api/Feedbacks HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=green HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=apple HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /api/Challenges HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /rest/products/search?q=juice HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET / HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [64208]

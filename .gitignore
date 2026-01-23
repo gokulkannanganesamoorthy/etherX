@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.env
+venv/
+node_modules/
+.DS_Store
+# User requested to ignore the manual
+MANUAL.md
+juice-shop/
