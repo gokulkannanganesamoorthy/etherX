@@ -1,9 +1,24 @@
+# Python
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*$py.class
 venv/
+.env
+
+# Model & DB
+*.pkl
+*.db
+*.sqlite3
+
+# Logs
+*.log
+access.log
+
+# Frontend
 node_modules/
+dist/
 .DS_Store
-# User requested to ignore the manual
-MANUAL.md
-juice-shop/
+
+# IDE
+.vscode/
+.idea/

@@ -15,22 +15,35 @@ echo -e "\n${GREEN}[+] Killing old processes...${NC}"
 # Kill python processes related to our apps
 lsof -ti:8000 | xargs kill -9 2>/dev/null
 lsof -ti:3000 | xargs kill -9 2>/dev/null
-pkill -f "python waffle.py" 2>/dev/null
-pkill -f "python benign_app.py" 2>/dev/null
+pkill -f "python waf.py" 2>/dev/null
+pkill -f "python mock_server.py" 2>/dev/null
 sleep 2
 
 source venv/bin/activate
-python benign_app.py > /dev/null 2>&1 &
+python mock_server.py > /dev/null 2>&1 &
 PID_APP=$!
-echo -e " -> Benign App Started (Port 3000) [PID: $PID_APP]"
+echo -e " -> Mock Upstream App Started (Port 3000) [PID: $PID_APP]"
 sleep 2
 
 python waf.py > /dev/null 2>&1 &
 PID_WAF=$!
 echo -e " -> WAF Engine Started (Port 8000) [PID: $PID_WAF]"
 
-echo -e "\n${BLUE}[i] WAF Dashboard available at: http://localhost:8000/dashboard${NC}"
-sleep 3
+echo -e "\n${BLUE}[i] Waiting for WAF to load Sentinel Model (may take 10-20s)...${NC}"
+# Wait loop
+count=0
+while ! nc -z localhost 8000; do   
+  sleep 1
+  count=$((count+1))
+  echo -n "."
+  if [ $count -ge 30 ]; then
+      echo -e "\n${RED}[!] WAF Timed Out! Check logs.${NC}"
+      exit 1
+  fi
+done
+echo -e "\n${GREEN}[+] WAF is ONLINE!${NC}"
+echo -e "${BLUE}[i] WAF Dashboard available at: http://localhost:8000/dashboard${NC}"
+sleep 2
 
 echo -e "\n${GREEN}[+] Test 1: Normal User Traffic (Allow)${NC}"
 echo "Sending: GET /products"

@@ -6,7 +6,7 @@ import json
 import urllib.parse
 
 # Base URL of the JuiceShop
-BASE_URL = "http://localhost:3000"
+BASE_URL = "http://localhost:8000"
 
 # User Agents to simulate different devices
 USER_AGENTS = [
