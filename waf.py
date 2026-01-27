@@ -106,7 +106,8 @@ app.add_middleware(
 client = httpx.AsyncClient(base_url=TARGET_URL)
 
 # --- 3. Persistence & Security ---
-DB_PATH = "wafel.db"
+# Ensure absolute path for DB to avoid CWD issues
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wafel.db")
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -144,6 +145,10 @@ init_db()
 
 def load_stats_from_db():
     try:
+        if not os.path.exists(DB_PATH):
+            logger.warning(f"DB not found at {DB_PATH}, starting fresh.")
+            return {"total_requests": 0, "blocked_requests": 0, "allowed_requests": 0}
+            
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("SELECT COUNT(*) FROM logs")
@@ -151,6 +156,8 @@ def load_stats_from_db():
         c.execute("SELECT COUNT(*) FROM logs WHERE class='blocked'")
         blocked = c.fetchone()[0]
         conn.close()
+        
+        logger.info(f"Loaded Stats from DB: Total={total}, Blocked={blocked}")
         return {
             "total_requests": total,
             "blocked_requests": blocked,
@@ -163,29 +170,23 @@ def load_stats_from_db():
 # Load persistent stats
 stats = load_stats_from_db()
 
-def log_to_db(entry):
+def log_to_db(log_entry):
+    # We store full_url in risk_details to avoid schema migration for now
+    if "full_url" in log_entry:
+        if "risk_details" not in log_entry or not log_entry["risk_details"]:
+            log_entry["risk_details"] = {}
+        log_entry["risk_details"]["full_url"] = log_entry["full_url"]
+
     try:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        
-        # Serialize risk_details to JSON if it's a dict
-        risk_details_str = json.dumps(entry.get('risk_details', {}))
-        
         c.execute('''INSERT INTO logs 
-                     (timestamp, method, path, score, status, class, client_ip, risk_details, latency_ms, user_agent, payload_snippet) 
+                     (timestamp, method, path, score, class, status, client_ip, risk_details, latency_ms, user_agent, payload_snippet)
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                  (entry['time'], 
-                   entry['method'], 
-                   entry['path'], 
-                   float(entry['score']), 
-                   entry['status'], 
-                   entry['class'], 
-                   entry['client_ip'],
-                   risk_details_str,
-                   entry.get('latency_ms', 0.0),
-                   entry.get('user_agent', ''),
-                   entry.get('payload_snippet', '')
-                  ))
+                  (log_entry['time'], log_entry['method'], log_entry['path'], 
+                   float(log_entry['score']), log_entry['class'], log_entry['status'], 
+                   log_entry['client_ip'], json.dumps(log_entry['risk_details']), 
+                   log_entry['latency_ms'], log_entry['user_agent'], log_entry['payload_snippet']))
         conn.commit()
         conn.close()
     except Exception as e:
@@ -367,7 +368,7 @@ async def send_alert(payload):
             "time": time.strftime("%H:%M:%S"),
             "method": payload['method'],
             "path": payload['path'],
-            "full_url": f"{payload['path']}?{payload['query']}" if payload['query'] else payload['path'],
+            "full_url": payload.get('full_url', payload['path']),
             "score": payload['risk_score'],
             "status": payload['action'],
             "class": "blocked" if payload['action'] == "BLOCK" else "allowed",
@@ -433,6 +434,7 @@ async def waf_middleware(request: Request, call_next):
         "client_ip": client_ip,
         "method": method,
         "path": path,
+        "full_url": str(request.url),
         "query": query,
         "user_agent": request.headers.get("user-agent", "unknown"),
         "payload_snippet": body_str[:200] if body_str else None,
@@ -441,11 +443,13 @@ async def waf_middleware(request: Request, call_next):
         "risk_details": risk_details,
         "latency_ms": round(duration * 1000, 2)
     }
+    
 
     log_entry = {
         "time": time.strftime("%H:%M:%S"),
         "method": method,
         "path": path,
+        "full_url": str(request.url),
         "score": f"{score:.2f}",
         "class": "blocked" if is_blocked else "allowed",
         "status": "BLOCKED" if is_blocked else "ALLOWED",
@@ -514,6 +518,7 @@ async def get_stats():
             "time": r["timestamp"],
             "method": r["method"],
             "path": r["path"],
+            "full_url": risk_details.get("full_url", r["path"]),
             "score": r["score"],
             "status": r["status"],
             "class": r["class"],
@@ -686,27 +691,59 @@ async def dashboard():
             <!-- Left Panel -->
             <div class="lg:col-span-4 flex flex-col gap-6">
                 
-                <!-- NEURAL GRID CARD -->
-                <div class="glass-panel rounded-2xl p-6 relative flex flex-col items-center justify-center overflow-hidden min-h-[300px]">
-                    <div class="absolute top-4 left-4 flex gap-2">
-                        <div class="w-1 h-1 bg-holo-cyan rounded-full"></div>
-                        <div class="w-1 h-1 bg-white/20 rounded-full"></div>
+                <!-- THREAT INTELLIGENCE CARD -->
+                <div class="glass-panel rounded-2xl p-6 relative flex flex-col overflow-hidden min-h-[300px]">
+                    <div class="flex justify-between items-start mb-6">
+                         <div>
+                            <h3 class="text-sm font-bold text-white tracking-widest uppercase">Threat Intel</h3>
+                            <span class="text-[10px] uppercase tracking-widest text-holo-cyan" id="ti-status">Active Monitoring</span>
+                         </div>
+                         <div class="px-2 py-1 rounded bg-holo-cyan/10 border border-holo-cyan/20 text-[10px] font-mono text-holo-cyan animate-pulse">LIVE</div>
                     </div>
-                    <div class="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">NEURAL_ENGINE_V6</div>
 
-                    <!-- Neural Grid Container -->
-                    <div class="relative w-64 h-64 flex items-center justify-center">
-                        <div class="neural-grid-container" id="neural-grid">
-                            <!-- Neurons Injected via JS -->
-                        </div>
-                         
-                        <!-- Central Status Over Grid -->
-                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                             <div class="backdrop-blur-sm bg-black/40 p-4 border border-white/10 rounded-lg text-center shadow-2xl">
-                                 <div class="text-3xl font-black text-white tracking-[0.1em]" id="ai-status">ACTIVE</div>
-                                 <div class="text-[9px] uppercase tracking-widest text-holo-cyan mt-1" id="ai-subtext">Deep Learning Inference</div>
+                    <!-- Threat Breakdown -->
+                    <div class="flex-1 flex flex-col justify-center gap-4" id="threat-intel-body">
+                         <div class="space-y-4">
+                             <!-- SQL Injection -->
+                             <div>
+                                 <div class="flex justify-between items-center text-[10px] uppercase tracking-wider mb-1">
+                                     <span class="text-white/60">SQL Injection</span>
+                                     <span class="font-mono text-holo-red font-bold" id="val-sqli">0</span>
+                                 </div>
+                                 <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                     <div class="h-full bg-holo-red w-[0%] transition-all duration-1000" id="bar-sqli"></div>
+                                 </div>
+                             </div>
+                             
+                             <!-- XSS -->
+                             <div>
+                                 <div class="flex justify-between items-center text-[10px] uppercase tracking-wider mb-1">
+                                     <span class="text-white/60">XSS / Scripting</span>
+                                     <span class="font-mono text-holo-purple font-bold" id="val-xss">0</span>
+                                 </div>
+                                 <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                     <div class="h-full bg-holo-purple w-[0%] transition-all duration-1000" id="bar-xss"></div>
+                                 </div>
+                             </div>
+
+                             <!-- Anomaly/Other -->
+                             <div>
+                                 <div class="flex justify-between items-center text-[10px] uppercase tracking-wider mb-1">
+                                     <span class="text-white/60">Neural Anomalies</span>
+                                     <span class="font-mono text-holo-cyan font-bold" id="val-anomaly">0</span>
+                                 </div>
+                                 <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                     <div class="h-full bg-holo-cyan w-[0%] transition-all duration-1000" id="bar-anomaly"></div>
+                                 </div>
                              </div>
                          </div>
+                    </div>
+                    
+                    <!-- Decorator -->
+                    <div class="absolute bottom-0 right-0 p-4 opacity-20 pointer-events-none">
+                         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-holo-cyan">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                         </svg>
                     </div>
                 </div>
 
@@ -737,7 +774,7 @@ async def dashboard():
             </div>
 
             <!-- Right Panel: Feed -->
-            <div class="lg:col-span-8 flex flex-col">
+            <div class="lg:col-span-8 flex flex-col h-full min-h-0">
                 <div class="glass-panel rounded-2xl flex-1 flex flex-col overflow-hidden">
                     <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/5 backdrop-blur-xl">
                         <div class="flex items-center gap-3">
@@ -756,7 +793,7 @@ async def dashboard():
                                 <tr>
                                     <th class="p-4 font-medium">Time</th>
                                     <th class="p-4 font-medium">Method</th>
-                                    <th class="p-4 font-medium">Path</th>
+                                    <th class="p-4 font-medium w-96">Request Flow</th>
                                     <th class="p-4 text-right font-medium">Risk Score</th>
                                     <th class="p-4 text-right font-medium">Status</th>
                                 </tr>
@@ -775,281 +812,79 @@ async def dashboard():
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${protocol}//${window.location.host}/ws`;
             let socket;
+            
+            // Threat Intel Stats
+            let threatStats = { sqli: 0, xss: 0, anomaly: 0 };
+            
+            function countThreat(log) {
+                if(log.class !== 'blocked') return;
+                const details = log.risk_details || {};
+                let type = 'anomaly';
+                
+                // Heuristics
+                const payload = (log.payload_snippet || "").toLowerCase();
+                if (payload.includes('union') || payload.includes('select') || payload.includes('or 1=1')) type = 'sqli';
+                
+                if (details.signature_match) {
+                     const sig = details.signature_match.toLowerCase();
+                     if (sig.includes('script') || sig.includes('alert') || sig.includes('javascript')) type = 'xss';
+                     else if (sig.includes('union') || sig.includes('select')) type = 'sqli';
+                }
+                
+                if (type === 'sqli') threatStats.sqli++;
+                else if (type === 'xss') threatStats.xss++;
+                else threatStats.anomaly++;
+            }
+            
+            function updateThreatVisuals() {
+                const total = threatStats.sqli + threatStats.xss + threatStats.anomaly;
+                ['sqli', 'xss', 'anomaly'].forEach(key => {
+                    const valEl = document.getElementById(`val-${key}`);
+                    const barEl = document.getElementById(`bar-${key}`);
+                    if(valEl) valEl.innerText = threatStats[key];
+                    
+                    if(barEl && total > 0) {
+                        const pct = (threatStats[key] / total) * 100;
+                        barEl.style.width = `${pct}%`;
+                    }
+                });
+            }
 
             function connectWebSocket() {
-                socket = new WebSocket(wsUrl);
+                // Check if socket exists and is active
+                if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+                    return; 
+                }
+                  
+                if (!socket || (socket.readyState !== WebSocket.OPEN && socket.readyState !== WebSocket.CONNECTING)) {
+                    socket = new WebSocket(wsUrl);
 
-                socket.onopen = function() {
-                    console.log("Connected to Real-time Feed");
-                    const modelEl = document.getElementById('model-name');
-                    if (!modelEl.innerText.includes("LIVE")) modelEl.innerText += " • LIVE";
-                };
+                    socket.onopen = function() {
+                        console.log("Connected to Real-time Feed");
+                        const modelEl = document.getElementById('model-name');
+                        if (modelEl && !modelEl.innerText.includes("LIVE")) modelEl.innerText += " • LIVE";
+                    };
 
-                socket.onmessage = function(event) {
-                    const msg = JSON.parse(event.data);
-                    if (msg.type === 'new_log') {
-                        updateDashboard(msg.data, msg.stats);
-                    }
-                };
-
-                socket.onclose = function() {
-                    console.log("Disconnected. Reconnecting...");
-                    setTimeout(connectWebSocket, 3000);
-                };
-            }
-
-            function updateDashboard(log, stats) {
-                // 1. Update Stats
-                document.getElementById('total-req').innerText = stats.total_requests.toLocaleString();
-                document.getElementById('allowed-req').innerText = stats.allowed_requests.toLocaleString();
-                document.getElementById('blocked-req').innerText = stats.blocked_requests.toLocaleString();
-                
-                // 2. Update Visuals
-                const isBlocked = log.class === 'blocked';
-                const statusEl = document.getElementById('ai-status');
-                const subtextEl = document.getElementById('ai-subtext');
-                const blockedCard = document.getElementById('blocked-card');
-                
-                if (isBlocked) {
-                    statusEl.innerText = "THREAT DETECTED";
-                    statusEl.classList.remove('text-white');
-                    statusEl.classList.add('text-holo-red', 'animate-pulse');
-                    
-                    subtextEl.innerText = "NEURAL REJECTION ENGAGED";
-                    subtextEl.classList.remove('text-holo-cyan');
-                    subtextEl.classList.add('text-holo-red', 'font-bold');
-                    
-                    // Trigger Red Neurons
-                    document.querySelectorAll('.neuron').forEach(n => {
-                        n.classList.add('active-red');
-                        setTimeout(() => n.classList.remove('active-red'), 2000);
-                    });
-                    
-                    blockedCard.classList.add('ring-1', 'ring-holo-red');
-                    
-                    // Flash effect
-                    document.body.style.boxShadow = "inset 0 0 100px rgba(255, 0, 85, 0.2)";
-                    setTimeout(() => document.body.style.boxShadow = "none", 300);
-
-                    // Reset visuals after 2.5 seconds
-                    setTimeout(() => {
-                        if(statusEl) {
-                            statusEl.innerText = "ACTIVE";
-                            statusEl.classList.add('text-white');
-                            statusEl.classList.remove('text-holo-red', 'animate-pulse');
-                        }
-                        
-                        if(subtextEl) {
-                            subtextEl.innerText = "Deep Learning Inference";
-                            subtextEl.classList.add('text-holo-cyan');
-                            subtextEl.classList.remove('text-holo-red', 'font-bold');
-                        }
-                        
-                        if(blockedCard) blockedCard.classList.remove('ring-1', 'ring-holo-red');
-                    }, 2500);
-                } else {
-                     // Random neural activation on valid request
-                    const neurons = document.querySelectorAll('.neuron');
-                    if(neurons.length > 0) {
-                        for(let i=0; i<3; i++) {
-                            const n = neurons[Math.floor(Math.random() * neurons.length)];
-                            if(n) {
-                                n.classList.add('active');
-                                setTimeout(() => n.classList.remove('active'), 500);
+                    socket.onmessage = function(event) {
+                        try {
+                            const msg = JSON.parse(event.data);
+                            if (msg.type === 'new_log') {
+                                updateDashboard(msg.data, msg.stats);
                             }
-                        }
-                    }
-                }
-            }
+                        } catch(e) { console.error("WS Message Error", e); }
+                    };
 
-            // Neural Grid Initialization
-            function initNeuralGrid() {
-                const grid = document.getElementById('neural-grid');
-                if(!grid) return;
-                
-                // Keep grid clear initially
-                grid.innerHTML = '';
-
-                // Create 64 neurons (8x8)
-                for (let i = 0; i < 64; i++) {
-                    const neuron = document.createElement('div');
-                    neuron.className = 'neuron';
-                    grid.appendChild(neuron);
-                }
-                
-                // Backround idle animation
-                setInterval(() => {
-                    const neurons = document.querySelectorAll('.neuron');
-                    if(neurons.length > 0) {
-                        const randomNeuron = neurons[Math.floor(Math.random() * neurons.length)];
-                        if(randomNeuron) {
-                            randomNeuron.classList.add('active');
-                            setTimeout(() => randomNeuron.classList.remove('active'), 800);
-                        }
-                    }
-                }, 200);
-            }
-
-                // 3. Add to Table (Prepend)
-                const tbody = document.getElementById('log-table');
-                
-                const methodColor = getMethodColor(log.method);
-                const rowId = log.id || Math.floor(Math.random() * 1000000); 
-
-                const tr = document.createElement('tr');
-                tr.className = `group cursor-pointer hover:bg-white/5 transition-all duration-300 font-mono ${isBlocked ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-cyan-500/5'}`;
-                tr.onclick = () => toggleDetails(rowId);
-                
-                // Status Pill
-                const statusPill = isBlocked 
-                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/10 text-red-400 border border-red-400/20 shadow-[0_0_10px_rgba(248,113,113,0.1)]">DENIED</span>`
-                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">ALLOWED</span>`;
-
-                tr.innerHTML = `
-                    <td class="p-4 text-white/60 text-xs">${log.time}</td>
-                    <td class="p-4"><span class="${methodColor} font-bold text-xs">${log.method}</span></td>
-                    <td class="p-4 text-white/90 text-xs max-w-xs truncate group-hover:text-holo-cyan transition-colors" title="${log.path}">${log.path}</td>
-                    <td class="p-4 text-right text-xs font-bold text-white/80">${log.score}</td>
-                    <td class="p-4 text-right">
-                        ${statusPill}
-                    </td>
-                `;
-                
-                // Detail Row
-                const detailTr = document.createElement('tr');
-                detailTr.id = `detail-${rowId}`;
-                detailTr.className = "hidden bg-black/20";
-                const detailsJson = JSON.stringify(log.risk_details || {}, null, 2);
-                
-                detailTr.innerHTML = `
-                    <td colspan="5" class="p-0">
-                         <div class="m-2 rounded-lg bg-black/40 border border-white/5 p-4 text-xs">
-                            <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
-                                 <div>
-                                     <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span>
-                                     <span class="font-mono text-white">${log.client_ip}</span>
-                                 </div>
-                                 <div>
-                                     <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span>
-                                     <span class="font-mono text-white">${log.latency_ms}ms</span>
-                                 </div>
-                                 <div class="truncate">
-                                     <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span>
-                                     <span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span>
-                                 </div>
-                            </div>
-                             ${log.payload ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload}</div></div>` : ''}
-                            <div>
-                                <div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div>
-                                <pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre>
-                            </div>
-                        </div>
-                    </td>
-                `;
-
-                // Insert at top with animation
-                tr.style.opacity = '0';
-                tr.style.transform = 'translateY(-10px)';
-                
-                tbody.insertBefore(detailTr, tbody.firstChild);
-                tbody.insertBefore(tr, tbody.firstChild);
-                
-                requestAnimationFrame(() => {
-                    tr.style.opacity = '1';
-                    tr.style.transform = 'translateY(0)';
-                });
-                
-                // Limit rows
-                if (tbody.children.length > 50) {
-                    tbody.removeChild(tbody.lastChild);
-                    tbody.removeChild(tbody.lastChild);
-                }
-            }
-
-            async function fetchStats() {
-                try {
-                    const response = await fetch('/stats');
-                    const data = await response.json();
+                    socket.onclose = function() {
+                        console.log("Disconnected. Reconnecting...");
+                        setTimeout(connectWebSocket, 3000);
+                    };
                     
-                    document.getElementById('total-req').innerText = data.stats.total_requests.toLocaleString();
-                    document.getElementById('allowed-req').innerText = data.stats.allowed_requests.toLocaleString();
-                    document.getElementById('blocked-req').innerText = data.stats.blocked_requests.toLocaleString();
-                    if (data.logs.length > 0) {
-                         document.getElementById('latency').innerText = data.logs[0].latency_ms || 8;
-                    }
-                    
-                    // Logs Render
-                    const tbody = document.getElementById('log-table');
-                    tbody.innerHTML = "";
-                    
-                    data.logs.forEach(log => {
-                        const isBlocked = log.class === 'blocked';
-                        const methodColor = getMethodColor(log.method);
-                        const rowId = log.id;
-
-                        const tr = document.createElement('tr');
-                        tr.className = `group cursor-pointer hover:bg-white/5 transition-all duration-300 font-mono ${isBlocked ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-cyan-500/5'}`;
-                        tr.onclick = () => toggleDetails(rowId);
-                        
-                        const statusPill = isBlocked 
-                            ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/10 text-red-400 border border-red-400/20">DENIED</span>`
-                            : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">ALLOWED</span>`;
-
-                        tr.innerHTML = `
-                             <td class="p-4 text-white/60 text-xs">${log.time}</td>
-                            <td class="p-4"><span class="${methodColor} font-bold text-xs">${log.method}</span></td>
-                            <td class="p-4 text-white/90 text-xs max-w-xs truncate group-hover:text-holo-cyan transition-colors" title="${log.path}">${log.path}</td>
-                            <td class="p-4 text-right text-xs font-bold text-white/80">${log.score}</td>
-                            <td class="p-4 text-right">
-                                ${statusPill}
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-
-                        const detailTr = document.createElement('tr');
-                        detailTr.id = `detail-${rowId}`;
-                        detailTr.className = "hidden bg-black/20";
-                        
-                        const detailsJson = JSON.stringify(log.risk_details, null, 2);
-                        
-                        detailTr.innerHTML = `
-                             <td colspan="5" class="p-0">
-                                <div class="m-2 rounded-lg bg-black/40 border border-white/5 p-4 text-xs">
-                                    <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
-                                         <div>
-                                             <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span>
-                                             <span class="font-mono text-white">${log.client_ip}</span>
-                                         </div>
-                                         <div>
-                                             <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span>
-                                             <span class="font-mono text-white">${log.latency_ms}ms</span>
-                                         </div>
-                                         <div class="truncate">
-                                             <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span>
-                                             <span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span>
-                                         </div>
-                                    </div>
-                                     ${log.payload_snippet ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload_snippet}</div></div>` : ''}
-                                    <div>
-                                        <div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div>
-                                        <pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre>
-                                    </div>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(detailTr);
-                    });
-
-                } catch (e) { console.error(e); }
-            }
-            
-            function toggleDetails(id) {
-                const el = document.getElementById(`detail-${id}`);
-                if (el) {
-                    el.classList.toggle('hidden');
+                    socket.onerror = function(err) {
+                        console.error("WebSocket Error", err);
+                    };
                 }
             }
-            
+
             function getMethodColor(method) {
                 switch(method) {
                     case 'GET': return 'text-holo-cyan';
@@ -1058,11 +893,200 @@ async def dashboard():
                     default: return 'text-white/50';
                 }
             }
-            
+
+            function updateDashboard(log, stats) {
+                // 1. Update Stats
+                if (stats) {
+                    document.getElementById('total-req').innerText = stats.total_requests.toLocaleString();
+                    document.getElementById('allowed-req').innerText = stats.allowed_requests.toLocaleString();
+                    document.getElementById('blocked-req').innerText = stats.blocked_requests.toLocaleString();
+                }
+                
+                // 2. Update Visuals
+                const isBlocked = log.class === 'blocked';
+                const blockedCard = document.getElementById('blocked-card');
+                
+                if (isBlocked) {
+                    // Flash Effect
+                    document.body.style.boxShadow = "inset 0 0 100px rgba(255, 0, 85, 0.2)";
+                    setTimeout(() => document.body.style.boxShadow = "none", 300);
+                    
+                    if (blockedCard) {
+                        blockedCard.classList.add('ring-1', 'ring-holo-red');
+                        setTimeout(() => blockedCard.classList.remove('ring-1', 'ring-holo-red'), 2500);
+                    }
+                    
+                    // Update Threat Intel
+                    countThreat(log);
+                    updateThreatVisuals();
+                }
+
+                // 3. Add to Table
+                try {
+                    const tbody = document.getElementById('log-table');
+                    const methodColor = getMethodColor(log.method);
+                    const rowId = log.id || Math.random().toString(36).substr(2, 9);
+    
+                    const tr = document.createElement('tr');
+                    tr.className = `group cursor-pointer hover:bg-white/5 transition-all duration-300 font-mono ${isBlocked ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-cyan-500/5'}`;
+                    tr.onclick = () => toggleDetails(rowId);
+                    
+                    const statusPill = isBlocked 
+                        ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/10 text-red-400 border border-red-400/20 shadow-[0_0_10px_rgba(248,113,113,0.1)]">DENIED</span>`
+                        : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">ALLOWED</span>`;
+    
+                    // Safely handle full_url and other fields
+                    const fullUrl = log.risk_details && log.risk_details.full_url ? log.risk_details.full_url : (log.full_url || log.path);
+                    const displayPath = fullUrl || log.path;
+
+                    tr.innerHTML = `
+                        <td class="p-4 text-white/60 text-xs">${log.time || 'NOW'}</td>
+                        <td class="p-4"><span class="${methodColor} font-bold text-xs">${log.method}</span></td>
+                        <td class="p-4 text-xs group-hover:text-white transition-colors">
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2 text-[10px] text-white/40 font-mono">
+                                    <span>${log.client_ip}</span>
+                                    <span class="text-holo-cyan">➜</span>
+                                    <span>SERVER</span>
+                                </div>
+                                <div class="font-mono text-white/90 truncate w-96" title="${displayPath}">${displayPath}</div>
+                            </div>
+                        </td>
+                        <td class="p-4 text-right text-xs font-bold text-white/80">${log.score}</td>
+                        <td class="p-4 text-right">
+                            ${statusPill}
+                        </td>
+                    `;
+                    
+                    const detailTr = document.createElement('tr');
+                    detailTr.id = `detail-${rowId}`;
+                    detailTr.className = "hidden bg-black/20";
+                    const detailsJson = JSON.stringify(log.risk_details || {}, null, 2);
+                    
+                    detailTr.innerHTML = `
+                        <td colspan="5" class="p-0">
+                             <div class="m-2 rounded-lg bg-black/40 border border-white/5 p-4 text-xs">
+                                <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
+                                     <div><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span><span class="font-mono text-white">${log.client_ip}</span></div>
+                                     <div><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span><span class="font-mono text-white">${log.latency_ms}ms</span></div>
+                                     <div class="truncate"><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span><span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span></div>
+                                </div>
+                                 ${log.payload_snippet ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload_snippet.replace(/</g, '&lt;')}</div></div>` : ''}
+                                <div><div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div><pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre></div>
+                            </div>
+                        </td>
+                    `;
+    
+                    tr.style.opacity = '0';
+                    tr.style.transform = 'translateY(-10px)';
+                    tbody.insertBefore(detailTr, tbody.firstChild);
+                    tbody.insertBefore(tr, tbody.firstChild);
+                    requestAnimationFrame(() => {
+                        tr.style.opacity = '1';
+                        tr.style.transform = 'translateY(0)';
+                    });
+                    
+                    if (tbody.children.length > 50) {
+                        tbody.removeChild(tbody.lastChild);
+                        tbody.removeChild(tbody.lastChild);
+                    }
+                } catch(e) { console.error("Update Dashboard Error", e); }
+            }
+
+            function toggleDetails(id) {
+                const el = document.getElementById(`detail-${id}`);
+                if (el) el.classList.toggle('hidden');
+            }
+
+
+
+
+
+            async function fetchStats() {
+                try {
+                    const response = await fetch('/stats');
+                    const data = await response.json();
+                    
+                    if (data.stats) {
+                        document.getElementById('total-req').innerText = data.stats.total_requests.toLocaleString();
+                        document.getElementById('allowed-req').innerText = data.stats.allowed_requests.toLocaleString();
+                        document.getElementById('blocked-req').innerText = data.stats.blocked_requests.toLocaleString();
+                    }
+                    
+                    if (data.logs && data.logs.length > 0) {
+                        const tbody = document.getElementById('log-table');
+                        
+                        // Fix for Race Condition: Merge historical data even if WS already added rows
+                        data.logs.forEach(log => {
+                            const rowId = log.id || Math.random().toString(36).substr(2, 9);
+                            
+                            // Deduplication: Skip if row already exists (e.g. from Real-time WS)
+                            // Deduplication: Skip if row already exists (e.g. from Real-time WS)
+                            if (document.getElementById(`detail-${rowId}`)) return;
+                                
+                                // Count for Threat Intel (History)
+                                countThreat(log);
+                                const isBlocked = log.class === 'blocked';
+                                const methodColor = getMethodColor(log.method);
+                                
+                                const tr = document.createElement('tr');
+                                tr.className = `group cursor-pointer hover:bg-white/5 transition-all duration-300 font-mono ${isBlocked ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-cyan-500/5'}`;
+                                tr.onclick = () => toggleDetails(rowId);
+                                
+                                const statusPill = isBlocked 
+                                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/10 text-red-400 border border-red-400/20">DENIED</span>`
+                                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">ALLOWED</span>`;
+
+                                tr.innerHTML = `
+                                    <td class="p-4 text-white/60 text-xs">${log.time}</td>
+                                    <td class="p-4"><span class="${methodColor} font-bold text-xs">${log.method}</span></td>
+                                    <td class="p-4 text-xs group-hover:text-white transition-colors">
+                                        <div class="flex flex-col gap-1">
+                                            <div class="flex items-center gap-2 text-[10px] text-white/40 font-mono">
+                                                <span>${log.client_ip}</span>
+                                                <span class="text-holo-cyan">➜</span>
+                                                <span>SERVER</span>
+                                            </div>
+                                            <div class="font-mono text-white/90 truncate w-96" title="${log.full_url || log.path}">${log.full_url || log.path}</div>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 text-right text-xs font-bold text-white/80">${log.score}</td>
+                                    <td class="p-4 text-right">
+                                        ${statusPill}
+                                    </td>
+                                `;
+                                tbody.appendChild(tr);
+
+                                // Details Row
+                                const detailTr = document.createElement('tr');
+                                detailTr.id = `detail-${rowId}`;
+                                detailTr.className = "hidden bg-black/20";
+                                const detailsJson = JSON.stringify(log.risk_details, null, 2);
+                                detailTr.innerHTML = `
+                                     <td colspan="5" class="p-0">
+                                        <div class="m-2 rounded-lg bg-black/40 border border-white/5 p-4 text-xs">
+                                            <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
+                                                 <div><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span><span class="font-mono text-white">${log.client_ip}</span></div>
+                                                 <div><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span><span class="font-mono text-white">${log.latency_ms}ms</span></div>
+                                                 <div class="truncate"><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span><span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span></div>
+                                            </div>
+                                            ${log.payload_snippet ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload_snippet}</div></div>` : ''}
+                                            <div><div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div><pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre></div>
+                                        </div>
+                                    </td>
+                                `;
+                                tbody.appendChild(detailTr);
+                        });
+                    }
+
+                    // Update Visuals after history load
+                    updateThreatVisuals();
+                } catch(e) { console.error("Stats Fetch Error", e); }
+            }
+
             // Initialization
             fetchStats();
             connectWebSocket();
-            initNeuralGrid();
         </script>
     </body>
     </html>
