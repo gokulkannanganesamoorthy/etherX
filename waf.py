@@ -34,6 +34,7 @@ MODEL_PATH = os.getenv("MODEL_PATH", "./sentinel_model.pkl")
 THRESHOLD = float(os.getenv("BLOCK_THRESHOLD", "20.0"))
 
 # State
+# State (Initialized from DB later)
 stats = {
     "total_requests": 0,
     "blocked_requests": 0,
@@ -140,6 +141,27 @@ def init_db():
     conn.close()
 
 init_db()
+
+def load_stats_from_db():
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM logs")
+        total = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM logs WHERE class='blocked'")
+        blocked = c.fetchone()[0]
+        conn.close()
+        return {
+            "total_requests": total,
+            "blocked_requests": blocked,
+            "allowed_requests": total - blocked 
+        }
+    except Exception as e:
+        logger.error(f"Stats Load Error: {e}")
+        return {"total_requests": 0, "blocked_requests": 0, "allowed_requests": 0}
+
+# Load persistent stats
+stats = load_stats_from_db()
 
 def log_to_db(entry):
     try:
@@ -467,19 +489,6 @@ async def waf_middleware(request: Request, call_next):
         logger.error(json.dumps({"event": "upstream_error", "error": str(e)}))
         return Response("Upstream Gateway Error", status_code=502)
 
-# --- 6. Dashboard (React Frontend) ---
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-
-# Serve React Static Assets
-if os.path.exists("dashboard-ui/dist/assets"):
-    app.mount("/assets", StaticFiles(directory="dashboard-ui/dist/assets"), name="assets")
-
-@app.get("/")
-@app.get("/dashboard")
-async def serve_react_app():
-    return FileResponse("dashboard-ui/dist/index.html")
-
 # Fallback for API Stats
 @app.get("/stats")
 async def get_stats():
@@ -524,6 +533,7 @@ async def get_stats():
         "model": "SENTINEL-L6" if embedder else "DISTILBERT (MOCK)"
     }
 
+@app.get("/", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard():
     return """
@@ -535,217 +545,223 @@ async def dashboard():
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
         <script>
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                        animation: {
-                            'spin-slow': 'spin 8s linear infinite',
-                            'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                            'blob': 'blob 7s infinite',
-                            'shimmer': 'shimmer 2s linear infinite',
-                        },
-                        keyframes: {
-                            blob: {
-                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                            },
-                            shimmer: {
-                                '0%': { backgroundPosition: '200% 0' },
-                                '100%': { backgroundPosition: '-200% 0' }
-                            }
+                        fontFamily: { 
+                            sans: ['"Outfit"', 'sans-serif'],
+                            mono: ['"JetBrains Mono"', 'monospace'] 
                         },
                         colors: {
-                            'neon-red': '#ff003c',
-                            'neon-blue': '#00f2ea',
+                            'holo-bg': '#050b14',
+                            'holo-card': 'rgba(15, 23, 42, 0.6)',
+                            'holo-cyan': '#00f3ff',
+                            'holo-purple': '#bc13fe',
+                            'holo-green': '#00ff9d',
+                            'holo-red': '#ff0055',
+                        },
+                        backgroundImage: {
+                            'cyber-grid': "linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px)",
+                            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        },
+                        animation: {
+                            'spin-slow': 'spin 12s linear infinite',
+                            'float': 'float 6s ease-in-out infinite',
+                            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        },
+                        keyframes: {
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-10px)' },
+                            }
                         }
                     }
                 }
             }
         </script>
         <style>
-             body { background-color: #ffffff; }
+             body { 
+                 background-color: #030712; 
+                 background-image: 
+                    radial-gradient(circle at 50% 0%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 100% 0%, rgba(0, 243, 255, 0.1) 0%, transparent 40%);
+                 color: #e2e8f0; 
+                 font-family: 'Outfit', sans-serif;
+             }
              
-             /* Dynamic Background */
              .bg-grid {
-                 background-size: 40px 40px;
-                 background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
-                 mask-image: linear-gradient(to bottom, transparent, 10%, white, 90%, transparent);
+                 background-size: 50px 50px;
+                 mask-image: linear-gradient(to bottom, transparent, 2%, white, 90%, transparent);
              }
-             
-             /* Glass Cards */
+
+             /* Glass Panel */
              .glass-panel {
-                 background: rgba(255, 255, 255, 0.7);
-                 backdrop-filter: blur(20px);
-                 border: 1px solid rgba(255, 255, 255, 0.5);
-                 box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+                 background: rgba(10, 15, 30, 0.6);
+                 backdrop-filter: blur(16px);
+                 -webkit-backdrop-filter: blur(16px);
+                 border: 1px solid rgba(255, 255, 255, 0.08);
+                 box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
              }
              
-             .glass-panel:hover {
-                 transform: translateY(-2px);
-                 box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
-                 border-color: rgba(0, 0, 0, 0.1);
-             }
+             /* Custom Scrollbar */
+             ::-webkit-scrollbar { width: 6px; }
+             ::-webkit-scrollbar-track { background: transparent; }
+             ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+             ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-             /* Typography gradient */
-             .text-gradient {
-                 background: linear-gradient(to right, #000000, #434343);
-                 -webkit-background-clip: text;
-                 -webkit-text-fill-color: transparent;
-             }
+             /* Utility Classes */
+             .text-cyan-glow { text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+             .text-purple-glow { text-shadow: 0 0 10px rgba(188, 19, 254, 0.5); }
+             .border-gradient { border-image: linear-gradient(to right, #00f3ff, #bc13fe) 1; }
              
-             .text-gradient-red {
-                 background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-                 -webkit-background-clip: text;
-                 -webkit-text-fill-color: transparent;
+             /* Neural Grid */
+             .neural-grid-container {
+                 display: grid;
+                 grid-template-columns: repeat(8, 1fr);
+                 gap: 4px;
+                 width: 160px;
+                 transform: rotate(45deg);
+             }
+             .neuron {
+                 width: 12px;
+                 height: 12px;
+                 background: rgba(255, 255, 255, 0.03);
+                 border: 1px solid rgba(0, 243, 255, 0.1);
+                 transition: all 0.2s ease;
+             }
+             .neuron.active {
+                 background: #00f3ff;
+                 box-shadow: 0 0 8px #00f3ff;
+                 border-color: #fff;
+             }
+             .neuron.active-red {
+                 background: #ff0055;
+                 box-shadow: 0 0 8px #ff0055;
+                 border-color: #fff;
              }
 
-             /* Animated Border */
-             .gradient-border {
-                 position: relative;
-                 background: #fff;
-                 border-radius: 1rem;
-             }
-             .gradient-border::before {
-                 content: "";
-                 position: absolute;
-                 inset: -2px;
-                 border-radius: 1.2rem;
-                 background: linear-gradient(45deg, #ff003c, #00f2ea, #ff003c);
-                 background-size: 200% 200%;
-                 animation: shimmer 4s linear infinite;
-                 z-index: -1;
-                 opacity: 0;
-                 transition: opacity 0.3s;
-             }
-             .gradient-border.active::before { opacity: 1; }
-
-             /* Radar Animation */
-             .radar-sweep {
-                 position: absolute;
-                 height: 50%;
-                 width: 50%;
-                 background: conic-gradient(from 0deg, transparent, rgba(5, 150, 105, 0.2), rgba(5, 150, 105, 0.5));
-                 top: 0;
-                 left: 0;
-                 transform-origin: 100% 100%;
-                 animation: spin 3s linear infinite;
-                 border-right: 2px solid #10b981;
-             }
-             .radar-sweep.danger {
-                 background: conic-gradient(from 0deg, transparent, rgba(225, 29, 72, 0.2), rgba(225, 29, 72, 0.5));
-                 border-right: 2px solid #e11d48;
+             /* Animations */
+             .animate-pulse-glow { animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+             @keyframes pulse-glow {
+                 0%, 100% { opacity: 1; filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.7)); }
+                 50% { opacity: .5; filter: drop-shadow(0 0 2px rgba(0, 243, 255, 0.3)); }
              }
         </style>
     </head>
-    <body class="h-screen flex flex-col font-sans antialiased overflow-hidden selection:bg-black selection:text-white">
+    <body class="h-screen flex flex-col overflow-hidden selection:bg-holo-cyan selection:text-black">
         
-        <!-- Animated Background Blobs -->
-        <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-blue-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-            <div class="absolute top-[20%] -right-[10%] w-[50%] h-[50%] bg-purple-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
-            <div class="absolute -bottom-[20%] left-[20%] w-[50%] h-[50%] bg-pink-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
-            <div class="absolute inset-0 bg-grid opacity-50"></div>
-        </div>
+        <!-- Background Grid -->
+        <div class="fixed inset-0 bg-cyber-grid bg-grid opacity-20 pointer-events-none z-0"></div>
 
         <!-- Navbar -->
-        <nav class="border-b border-black/5 bg-white/60 backdrop-blur-xl sticky top-0 z-50">
+        <nav class="border-b border-white/5 bg-black/20 backdrop-blur-md z-40">
             <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg blur opacity-25"></div>
-                        <div class="relative h-10 w-10 bg-black rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                     <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-holo-cyan to-holo-purple rounded-lg blur opacity-40 group-hover:opacity-75 transition duration-500"></div>
+                        <div class="relative h-10 w-10 bg-black rounded-lg flex items-center justify-center border border-white/10">
+                            <span class="font-bold text-white text-xl">E</span>
                         </div>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-2xl tracking-tighter text-gradient">ETHERX <span class="font-light text-black/40">SENTINEL</span></h1>
-                    </div>
+                     </div>
+                     <div class="flex flex-col">
+                        <h1 class="text-xl font-bold tracking-wide text-white uppercase font-sans">EtherX <span class="font-light text-white/50">Sentinel</span></h1>
+                        <span class="text-[10px] uppercase tracking-[0.2em] text-holo-cyan text-cyan-glow">Advanced Security Protocol</span>
+                     </div>
                 </div>
-                <!-- Status Pill -->
-                <div class="px-4 py-1.5 rounded-full bg-white/50 border border-white/50 shadow-lg shadow-black/5 backdrop-blur-md flex items-center gap-2.5 transition-all hover:scale-105 cursor-default">
-                    <div class="relative flex h-3 w-3">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </div>
-                    <span class="text-xs font-bold tracking-widest uppercase text-black/70">System Active</span>
+                <div class="flex items-center gap-6">
+                     <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-holo-cyan/5 border border-holo-cyan/20">
+                        <div class="h-2 w-2 bg-holo-cyan rounded-full animate-pulse-glow"></div>
+                        <span class="text-xs font-medium text-holo-cyan tracking-wider uppercase">System Active</span>
+                     </div>
+                     <span class="font-mono text-xs text-white/30">V.11.0.4</span>
                 </div>
             </div>
         </nav>
 
         <!-- Main Content -->
-        <main class="relative z-10 flex-1 max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
+        <main class="relative flex-1 max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 z-10">
             
-            <!-- Left Panel: Visuals -->
+            <!-- Left Panel -->
             <div class="lg:col-span-4 flex flex-col gap-6">
-                <!-- RADAR -->
-                <div class="glass-panel rounded-3xl p-8 relative overflow-hidden group transition-all duration-300">
-                    <div class="absolute top-0 right-0 p-4 opacity-50">
-                        <svg class="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                
+                <!-- NEURAL GRID CARD -->
+                <div class="glass-panel rounded-2xl p-6 relative flex flex-col items-center justify-center overflow-hidden min-h-[300px]">
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <div class="w-1 h-1 bg-holo-cyan rounded-full"></div>
+                        <div class="w-1 h-1 bg-white/20 rounded-full"></div>
                     </div>
-                    
-                    <div class="flex flex-col items-center justify-center py-6">
-                        <div id="radar-container" class="relative w-48 h-48 rounded-full border border-black/10 flex items-center justify-center bg-black/5 shadow-inner">
-                            <div class="absolute inset-0 rounded-full border border-black/5 scale-[0.7]"></div>
-                            <div class="absolute inset-0 rounded-full border border-black/5 scale-[0.4]"></div>
-                            <div class="absolute inset-0 w-full h-full rounded-full overflow-hidden">
-                                <div id="radar-sweep" class="radar-sweep"></div>
-                            </div>
-                            <!-- Center Point -->
-                            <div class="h-3 w-3 bg-black rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)] z-10 relative">
-                                <div class="absolute -inset-1 bg-black/30 rounded-full animate-ping"></div>
-                            </div>
+                    <div class="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">NEURAL_ENGINE_V6</div>
+
+                    <!-- Neural Grid Container -->
+                    <div class="relative w-64 h-64 flex items-center justify-center">
+                        <div class="neural-grid-container" id="neural-grid">
+                            <!-- Neurons Injected via JS -->
                         </div>
-                        
-                        <div class="mt-8 text-center">
-                            <h2 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-black to-zinc-500 tracking-tighter" id="radar-status">SECURE</h2>
-                            <p class="text-sm font-semibold tracking-widest text-black/40 uppercase mt-1">Real-time Defense</p>
-                        </div>
+                         
+                        <!-- Central Status Over Grid -->
+                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                             <div class="backdrop-blur-sm bg-black/40 p-4 border border-white/10 rounded-lg text-center shadow-2xl">
+                                 <div class="text-3xl font-black text-white tracking-[0.1em]" id="ai-status">ACTIVE</div>
+                                 <div class="text-[9px] uppercase tracking-widest text-holo-cyan mt-1" id="ai-subtext">Deep Learning Inference</div>
+                             </div>
+                         </div>
                     </div>
                 </div>
 
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-2 gap-4">
-                     <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between h-32 hover:bg-white/40">
-                         <div class="text-xs font-bold text-black/40 tracking-widest uppercase">Traffic</div>
-                         <div class="text-4xl font-extrabold text-black tracking-tight" id="total-req">0</div>
+                     <div class="glass-panel rounded-2xl p-5 hover:bg-white/5 transition-colors group">
+                         <div class="text-xs font-bold text-white/40 uppercase mb-2 group-hover:text-white/60 transition-colors">Total Traffic</div>
+                         <div class="text-3xl font-bold text-white tracking-tight font-mono" id="total-req">0</div>
                      </div>
-                     <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between h-32 hover:bg-white/40">
-                         <div class="text-xs font-bold text-black/40 tracking-widest uppercase">Latency</div>
-                         <div class="flex items-baseline">
-                             <div class="text-4xl font-extrabold text-black tracking-tight" id="latency">0</div>
-                             <div class="text-sm font-bold text-black/30 ml-1">ms</div>
+                     <div class="glass-panel rounded-2xl p-5 hover:bg-white/5 transition-colors group">
+                         <div class="text-xs font-bold text-white/40 uppercase mb-2 group-hover:text-white/60 transition-colors">Latency</div>
+                         <div class="flex items-baseline gap-1">
+                             <div class="text-3xl font-bold text-holo-cyan tracking-tight font-mono" id="latency">0</div>
+                             <div class="text-sm font-medium text-holo-cyan/50">ms</div>
                          </div>
                      </div>
-                     <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between h-32 bg-emerald-50/50 border-emerald-100">
-                         <div class="text-xs font-bold text-emerald-600/60 tracking-widest uppercase">Allowed</div>
-                         <div class="text-4xl font-extrabold text-emerald-600 tracking-tight" id="allowed-req">0</div>
+                     <div class="glass-panel rounded-2xl p-5 relative overflow-hidden group">
+                         <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-holo-green to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                         <div class="text-xs font-bold text-holo-green/60 uppercase mb-2">Allowed</div>
+                         <div class="text-3xl font-bold text-white tracking-tight font-mono" id="allowed-req">0</div>
                      </div>
-                     <div id="blocked-card" class="gradient-border rounded-2xl p-5 flex flex-col justify-between h-32 shadow-xl shadow-red-500/10">
-                         <div class="text-xs font-bold text-rose-600/60 tracking-widest uppercase relative z-10">Intercepted</div>
-                         <div class="text-4xl font-extrabold text-rose-600 tracking-tight relative z-10" id="blocked-req">0</div>
+                     <div id="blocked-card" class="glass-panel rounded-2xl p-5 relative overflow-hidden group">
+                         <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-holo-red to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                         <div class="text-xs font-bold text-holo-red/60 uppercase mb-2">Threats</div>
+                         <div class="text-3xl font-bold text-white tracking-tight font-mono" id="blocked-req">0</div>
                      </div>
                 </div>
             </div>
 
             <!-- Right Panel: Feed -->
             <div class="lg:col-span-8 flex flex-col">
-                <div class="glass-panel rounded-3xl flex-1 flex flex-col overflow-hidden shadow-2xl shadow-black/5">
-                    <div class="p-6 border-b border-black/5 flex justify-between items-center bg-white/40 backdrop-blur-md">
+                <div class="glass-panel rounded-2xl flex-1 flex flex-col overflow-hidden">
+                    <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/5 backdrop-blur-xl">
                         <div class="flex items-center gap-3">
-                            <div class="h-2 w-2 bg-black rounded-full animate-pulse"></div>
-                            <h3 class="font-bold text-lg tracking-tight">Live Inspection Feed</h3>
+                             <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-holo-green opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-holo-green"></span>
+                              </span>
+                            <h3 class="font-bold text-sm tracking-widest text-white uppercase">Live Inspection Feed</h3>
                         </div>
-                        <div class="px-3 py-1 bg-black/5 rounded-lg text-[10px] font-mono text-black/50" id="model-name">SENTINEL-L6 INITIALIZED</div>
+                        <div class="px-3 py-1 rounded-md bg-black/40 border border-white/10 text-[10px] font-mono text-white/50" id="model-name">SENTINEL-L6</div>
                     </div>
                     
-                    <div class="flex-1 overflow-auto bg-white/30 p-2">
+                    <div class="flex-1 overflow-auto p-2 scroll-smooth">
                         <table class="w-full text-left border-collapse">
-                            <tbody class="space-y-2" id="log-table">
+                            <thead class="text-[10px] text-white/30 uppercase tracking-wider sticky top-0 z-10 font-bold border-b border-white/5 bg-[#0a0f1e]">
+                                <tr>
+                                    <th class="p-4 font-medium">Time</th>
+                                    <th class="p-4 font-medium">Method</th>
+                                    <th class="p-4 font-medium">Path</th>
+                                    <th class="p-4 text-right font-medium">Risk Score</th>
+                                    <th class="p-4 text-right font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-sm" id="log-table">
                                 <!-- Dynamic Rows -->
                             </tbody>
                         </table>
@@ -765,12 +781,12 @@ async def dashboard():
 
                 socket.onopen = function() {
                     console.log("Connected to Real-time Feed");
-                    document.getElementById('model-name').innerText += " • LIVE";
+                    const modelEl = document.getElementById('model-name');
+                    if (!modelEl.innerText.includes("LIVE")) modelEl.innerText += " • LIVE";
                 };
 
                 socket.onmessage = function(event) {
                     const msg = JSON.parse(event.data);
-                    
                     if (msg.type === 'new_log') {
                         updateDashboard(msg.data, msg.stats);
                     }
@@ -790,100 +806,164 @@ async def dashboard():
                 
                 // 2. Update Visuals
                 const isBlocked = log.class === 'blocked';
-                const statusEl = document.getElementById('radar-status');
-                const sweepEl = document.getElementById('radar-sweep');
+                const statusEl = document.getElementById('ai-status');
+                const subtextEl = document.getElementById('ai-subtext');
                 const blockedCard = document.getElementById('blocked-card');
                 
                 if (isBlocked) {
-                    statusEl.innerText = "THREAT NEUTRALIZED";
-                    statusEl.classList.add('text-gradient-red');
-                    statusEl.classList.remove('text-transparent', 'bg-clip-text', 'bg-gradient-to-br', 'from-black', 'to-zinc-500');
+                    statusEl.innerText = "THREAT DETECTED";
+                    statusEl.classList.remove('text-white');
+                    statusEl.classList.add('text-holo-red', 'animate-pulse');
                     
-                    sweepEl.classList.add('danger');
-                    blockedCard.classList.add('active');
+                    subtextEl.innerText = "NEURAL REJECTION ENGAGED";
+                    subtextEl.classList.remove('text-holo-cyan');
+                    subtextEl.classList.add('text-holo-red', 'font-bold');
                     
-                    // Reset visuals after 2 seconds
+                    // Trigger Red Neurons
+                    document.querySelectorAll('.neuron').forEach(n => {
+                        n.classList.add('active-red');
+                        setTimeout(() => n.classList.remove('active-red'), 2000);
+                    });
+                    
+                    blockedCard.classList.add('ring-1', 'ring-holo-red');
+                    
+                    // Flash effect
+                    document.body.style.boxShadow = "inset 0 0 100px rgba(255, 0, 85, 0.2)";
+                    setTimeout(() => document.body.style.boxShadow = "none", 300);
+
+                    // Reset visuals after 2.5 seconds
                     setTimeout(() => {
-                        statusEl.innerText = "SECURE";
-                        statusEl.classList.remove('text-gradient-red');
-                        statusEl.classList.add('text-transparent', 'bg-clip-text', 'bg-gradient-to-br', 'from-black', 'to-zinc-500');
-                        sweepEl.classList.remove('danger');
-                        blockedCard.classList.remove('active');
-                    }, 2000);
+                        if(statusEl) {
+                            statusEl.innerText = "ACTIVE";
+                            statusEl.classList.add('text-white');
+                            statusEl.classList.remove('text-holo-red', 'animate-pulse');
+                        }
+                        
+                        if(subtextEl) {
+                            subtextEl.innerText = "Deep Learning Inference";
+                            subtextEl.classList.add('text-holo-cyan');
+                            subtextEl.classList.remove('text-holo-red', 'font-bold');
+                        }
+                        
+                        if(blockedCard) blockedCard.classList.remove('ring-1', 'ring-holo-red');
+                    }, 2500);
+                } else {
+                     // Random neural activation on valid request
+                    const neurons = document.querySelectorAll('.neuron');
+                    if(neurons.length > 0) {
+                        for(let i=0; i<3; i++) {
+                            const n = neurons[Math.floor(Math.random() * neurons.length)];
+                            if(n) {
+                                n.classList.add('active');
+                                setTimeout(() => n.classList.remove('active'), 500);
+                            }
+                        }
+                    }
                 }
+            }
+
+            // Neural Grid Initialization
+            function initNeuralGrid() {
+                const grid = document.getElementById('neural-grid');
+                if(!grid) return;
+                
+                // Keep grid clear initially
+                grid.innerHTML = '';
+
+                // Create 64 neurons (8x8)
+                for (let i = 0; i < 64; i++) {
+                    const neuron = document.createElement('div');
+                    neuron.className = 'neuron';
+                    grid.appendChild(neuron);
+                }
+                
+                // Backround idle animation
+                setInterval(() => {
+                    const neurons = document.querySelectorAll('.neuron');
+                    if(neurons.length > 0) {
+                        const randomNeuron = neurons[Math.floor(Math.random() * neurons.length)];
+                        if(randomNeuron) {
+                            randomNeuron.classList.add('active');
+                            setTimeout(() => randomNeuron.classList.remove('active'), 800);
+                        }
+                    }
+                }, 200);
+            }
 
                 // 3. Add to Table (Prepend)
                 const tbody = document.getElementById('log-table');
                 
-                // Create Row
-                const methodStyle = getMethodStyle(log.method);
-                const tr = document.createElement('tr');
-                tr.className = `group relative rounded-t-xl transition-all duration-500 animate-pulse ${isBlocked ? 'bg-white border-l-4 border-rose-500' : 'bg-white/60 border-l-4 border-transparent'}`;
-                tr.onclick = () => toggleDetails(log.id || Date.now()); // Fallback ID if missing
-                
-                // Generate a temporary ID if one isn't provided (for real-time only, detailed view might fail without real ID, but db_log has it)
-                // Actually the WS payload might not have the DB ID if it's async. 
-                // Let's assume the backend sends it? Checking backend... 
-                // Backend WS payload doesn't include ID currently. I should probably add it or use timestamp as key.
-                // For now, let's use a random ID for the toggle to work locally.
+                const methodColor = getMethodColor(log.method);
                 const rowId = log.id || Math.floor(Math.random() * 1000000); 
 
+                const tr = document.createElement('tr');
+                tr.className = `group cursor-pointer hover:bg-white/5 transition-all duration-300 font-mono ${isBlocked ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-cyan-500/5'}`;
+                tr.onclick = () => toggleDetails(rowId);
+                
+                // Status Pill
+                const statusPill = isBlocked 
+                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/10 text-red-400 border border-red-400/20 shadow-[0_0_10px_rgba(248,113,113,0.1)]">DENIED</span>`
+                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">ALLOWED</span>`;
+
                 tr.innerHTML = `
-                    <td class="p-4 w-full flex items-center justify-between">
-                        <div class="flex items-center gap-6">
-                            <span class="font-mono text-xs text-black/30 font-bold tracking-widest">${log.time}</span>
-                            <span class="px-2.5 py-1 rounded-md text-[10px] font-black tracking-wider uppercase border ${methodStyle}">${log.method}</span>
-                            <span class="font-medium text-sm text-black/80 truncate max-w-md font-mono tracking-tight group-hover:text-black transition-colors" title="${log.path}">${log.path}</span>
-                        </div>
-                        <div class="flex items-center gap-8">
-                            <div class="text-right">
-                                <div class="text-[10px] font-bold text-black/20 uppercase tracking-widest">Risk Score</div>
-                                <div class="text-base font-black font-mono tracking-tighter ${isBlocked ? 'text-rose-600' : 'text-black/40'}">${log.score}</div>
-                            </div>
-                                <div class="w-24 text-right">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${isBlocked ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30' : 'bg-emerald-500/10 text-emerald-600'}">
-                                    ${isBlocked ? 'BLOCKED' : 'ALLOW'}
-                                </span>
-                            </div>
-                        </div>
+                    <td class="p-4 text-white/60 text-xs">${log.time}</td>
+                    <td class="p-4"><span class="${methodColor} font-bold text-xs">${log.method}</span></td>
+                    <td class="p-4 text-white/90 text-xs max-w-xs truncate group-hover:text-holo-cyan transition-colors" title="${log.path}">${log.path}</td>
+                    <td class="p-4 text-right text-xs font-bold text-white/80">${log.score}</td>
+                    <td class="p-4 text-right">
+                        ${statusPill}
                     </td>
                 `;
                 
                 // Detail Row
                 const detailTr = document.createElement('tr');
                 detailTr.id = `detail-${rowId}`;
-                detailTr.className = "hidden";
+                detailTr.className = "hidden bg-black/20";
                 const detailsJson = JSON.stringify(log.risk_details || {}, null, 2);
                 
                 detailTr.innerHTML = `
-                    <td class="p-0">
-                        <div class="bg-gray-50 p-4 border-l-4 ${isBlocked ? 'border-rose-500' : 'border-transparent'} border-t border-black/5 rounded-b-xl mb-4 text-xs font-mono text-gray-600 shadow-inner">
-                            <div class="grid grid-cols-2 gap-4 mb-2">
-                                <div><span class="font-bold text-black/50">IP:</span> ${log.client_ip}</div>
-                                <div><span class="font-bold text-black/50">Latency:</span> ${log.latency_ms}ms</div>
-                                <div class="col-span-2 truncate"><span class="font-bold text-black/50">UA:</span> ${log.user_agent || 'N/A'}</div>
+                    <td colspan="5" class="p-0">
+                         <div class="m-2 rounded-lg bg-black/40 border border-white/5 p-4 text-xs">
+                            <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
+                                 <div>
+                                     <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span>
+                                     <span class="font-mono text-white">${log.client_ip}</span>
+                                 </div>
+                                 <div>
+                                     <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span>
+                                     <span class="font-mono text-white">${log.latency_ms}ms</span>
+                                 </div>
+                                 <div class="truncate">
+                                     <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span>
+                                     <span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span>
+                                 </div>
                             </div>
-                             ${log.payload ? `<div class="mb-2"><span class="font-bold text-black/50">Payload:</span> <div class="bg-white p-2 rounded border border-black/5 mt-1 break-all">${log.payload}</div></div>` : ''}
+                             ${log.payload ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload}</div></div>` : ''}
                             <div>
-                                <span class="font-bold text-black/50">Risk Details:</span>
-                                <pre class="bg-white p-2 rounded border border-black/5 mt-1 overflow-x-auto text-pink-600">${detailsJson}</pre>
+                                <div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div>
+                                <pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre>
                             </div>
                         </div>
                     </td>
                 `;
 
-                // Insert at top
+                // Insert at top with animation
+                tr.style.opacity = '0';
+                tr.style.transform = 'translateY(-10px)';
+                
                 tbody.insertBefore(detailTr, tbody.firstChild);
                 tbody.insertBefore(tr, tbody.firstChild);
                 
+                requestAnimationFrame(() => {
+                    tr.style.opacity = '1';
+                    tr.style.transform = 'translateY(0)';
+                });
+                
                 // Limit rows
-                if (tbody.children.length > 100) {
+                if (tbody.children.length > 50) {
                     tbody.removeChild(tbody.lastChild);
                     tbody.removeChild(tbody.lastChild);
                 }
-                
-                // Remove animation class
-                setTimeout(() => tr.classList.remove('animate-pulse'), 500);
             }
 
             async function fetchStats() {
@@ -897,61 +977,62 @@ async def dashboard():
                     if (data.logs.length > 0) {
                          document.getElementById('latency').innerText = data.logs[0].latency_ms || 8;
                     }
-                    document.getElementById('model-name').innerText = (data.model || "SENTINEL").toUpperCase() + " ACTIVE";
                     
-                    // Initial Table Load
+                    // Logs Render
                     const tbody = document.getElementById('log-table');
                     tbody.innerHTML = "";
                     
                     data.logs.forEach(log => {
                         const isBlocked = log.class === 'blocked';
-                        const methodStyle = getMethodStyle(log.method);
+                        const methodColor = getMethodColor(log.method);
                         const rowId = log.id;
 
                         const tr = document.createElement('tr');
-                        tr.className = `group relative rounded-t-xl transition-all duration-200 cursor-pointer hover:bg-black/5 ${isBlocked ? 'bg-white border-l-4 border-rose-500' : 'bg-white/60 border-l-4 border-transparent'}`;
+                        tr.className = `group cursor-pointer hover:bg-white/5 transition-all duration-300 font-mono ${isBlocked ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-cyan-500/5'}`;
                         tr.onclick = () => toggleDetails(rowId);
                         
+                        const statusPill = isBlocked 
+                            ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-400/10 text-red-400 border border-red-400/20">DENIED</span>`
+                            : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">ALLOWED</span>`;
+
                         tr.innerHTML = `
-                            <td class="p-4 w-full flex items-center justify-between">
-                                <div class="flex items-center gap-6">
-                                    <span class="font-mono text-xs text-black/30 font-bold tracking-widest">${log.time}</span>
-                                    <span class="px-2.5 py-1 rounded-md text-[10px] font-black tracking-wider uppercase border ${methodStyle}">${log.method}</span>
-                                    <span class="font-medium text-sm text-black/80 truncate max-w-md font-mono tracking-tight group-hover:text-black transition-colors" title="${log.path}">${log.path}</span>
-                                </div>
-                                <div class="flex items-center gap-8">
-                                    <div class="text-right">
-                                        <div class="text-[10px] font-bold text-black/20 uppercase tracking-widest">Risk Score</div>
-                                        <div class="text-base font-black font-mono tracking-tighter ${isBlocked ? 'text-rose-600' : 'text-black/40'}">${log.score}</div>
-                                    </div>
-                                     <div class="w-24 text-right">
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${isBlocked ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30' : 'bg-emerald-500/10 text-emerald-600'}">
-                                            ${isBlocked ? 'BLOCKED' : 'ALLOW'}
-                                        </span>
-                                    </div>
-                                </div>
+                             <td class="p-4 text-white/60 text-xs">${log.time}</td>
+                            <td class="p-4"><span class="${methodColor} font-bold text-xs">${log.method}</span></td>
+                            <td class="p-4 text-white/90 text-xs max-w-xs truncate group-hover:text-holo-cyan transition-colors" title="${log.path}">${log.path}</td>
+                            <td class="p-4 text-right text-xs font-bold text-white/80">${log.score}</td>
+                            <td class="p-4 text-right">
+                                ${statusPill}
                             </td>
                         `;
                         tbody.appendChild(tr);
 
                         const detailTr = document.createElement('tr');
                         detailTr.id = `detail-${rowId}`;
-                        detailTr.className = "hidden";
+                        detailTr.className = "hidden bg-black/20";
                         
                         const detailsJson = JSON.stringify(log.risk_details, null, 2);
                         
                         detailTr.innerHTML = `
-                            <td class="p-0">
-                                <div class="bg-gray-50 p-4 border-l-4 ${isBlocked ? 'border-rose-500' : 'border-transparent'} border-t border-black/5 rounded-b-xl mb-4 text-xs font-mono text-gray-600 shadow-inner">
-                                    <div class="grid grid-cols-2 gap-4 mb-2">
-                                        <div><span class="font-bold text-black/50">IP:</span> ${log.client_ip}</div>
-                                        <div><span class="font-bold text-black/50">Latency:</span> ${log.latency_ms}ms</div>
-                                        <div class="col-span-2 truncate"><span class="font-bold text-black/50">UA:</span> ${log.user_agent || 'N/A'}</div>
+                             <td colspan="5" class="p-0">
+                                <div class="m-2 rounded-lg bg-black/40 border border-white/5 p-4 text-xs">
+                                    <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
+                                         <div>
+                                             <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span>
+                                             <span class="font-mono text-white">${log.client_ip}</span>
+                                         </div>
+                                         <div>
+                                             <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span>
+                                             <span class="font-mono text-white">${log.latency_ms}ms</span>
+                                         </div>
+                                         <div class="truncate">
+                                             <span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span>
+                                             <span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span>
+                                         </div>
                                     </div>
-                                    ${log.payload_snippet ? `<div class="mb-2"><span class="font-bold text-black/50">Payload:</span> <div class="bg-white p-2 rounded border border-black/5 mt-1 break-all">${log.payload_snippet}</div></div>` : ''}
+                                     ${log.payload_snippet ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload_snippet}</div></div>` : ''}
                                     <div>
-                                        <span class="font-bold text-black/50">Risk Details:</span>
-                                        <pre class="bg-white p-2 rounded border border-black/5 mt-1 overflow-x-auto text-pink-600">${detailsJson}</pre>
+                                        <div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div>
+                                        <pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre>
                                     </div>
                                 </div>
                             </td>
@@ -969,18 +1050,19 @@ async def dashboard():
                 }
             }
             
-            function getMethodStyle(method) {
+            function getMethodColor(method) {
                 switch(method) {
-                    case 'GET': return 'bg-blue-50/50 text-blue-600 border-blue-200/50';
-                    case 'POST': return 'bg-violet-50/50 text-violet-600 border-violet-200/50';
-                    case 'DELETE': return 'bg-rose-50/50 text-rose-600 border-rose-200/50';
-                    default: return 'bg-gray-50/50 text-gray-600 border-gray-200/50';
+                    case 'GET': return 'text-holo-cyan';
+                    case 'POST': return 'text-holo-purple';
+                    case 'DELETE': return 'text-holo-red';
+                    default: return 'text-white/50';
                 }
             }
             
             // Initialization
-            fetchStats();       // 1. Load initial history
-            connectWebSocket(); // 2. Listen for live updates
+            fetchStats();
+            connectWebSocket();
+            initNeuralGrid();
         </script>
     </body>
     </html>
