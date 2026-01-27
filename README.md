@@ -1,51 +1,55 @@
 # EtherX Sentinel | Enterprise AI WAF
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/etherx/sentinel)
-[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/r/etherx/sentinel)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-EtherX Sentinel is a **Production-Grade Web Application Firewall** fueled by advanced Anomaly Detection models. It utilizes **Sentence Transformers** to embed HTTP traffic into high-dimensional vector space and **Isolation Forests** to identify malicious deviations with <10ms latency.
+EtherX Sentinel is a **Production-Grade Web Application Firewall** fueled by **Deep Learning Anomaly Detection**. It utilizes **Sentence Transformers** to embed HTTP traffic into high-dimensional vector space and a **PyTorch Autoencoder** to identify malicious deviations (Zero-Day Attacks) with <10ms latency.
 
 ---
 
 ## 🚀 Key Features
 
-- **Zero-Day Protection**: No regex signatures. Semantic understanding of attacks via `all-MiniLM-L6-v2`.
+- **Zero-Day Protection**: No regex signatures. Semantic understanding of attacks via `all-MiniLM-L6-v2` embeddings.
+- **Deep Anomaly Detection**: A Neural Autoencoder reconstructs valid traffic; high reconstruction error = threat.
 - **Honeypot Traps**: Instantly identifies scanners accessing `/admin.php` or `/.env`.
-- **Unsupervised Learning**: Trains on your benign traffic patterns. Anything else is blocked.
+- **Real-time Observability**:
+  - **WebSocket-powered** "Holographic" Dashboard (<50ms latency).
+  - **Neural Activity Grid**: Visualizes AI inference live.
 - **Production Readiness**:
   - Structural JSON Logging (ELK/Splunk compatible).
-  - Docker & Kubernetes Ready.
+  - SQLite Persistence (`wafel.db`) for unlimited history.
   - Async I/O (FastAPI + Uvicorn).
-- **Real-time Observability**: **WebSocket-powered** "Threat Hunter" Dashboard (<50ms latency).
-- **High-Performance**: Tested at **1000+ RPS** via Async I/O (FastAPI + Uvicorn).
+
+---
+
+## 📂 File Manifest & Project Structure
+
+Detailed explanation of all files in this repository:
+
+| File                          | Category        | Purpose                                                                                                                                                                                                    |
+| :---------------------------- | :-------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`waf.py`**                  | **Core Engine** | The main application. Runs the **FastAPI** server, handles the **WAF Middleware** logic, loads the **AI Model**, serves the **Holographic Dashboard** (HTML/JS/CSS), and manages **WebSocket** broadcasts. |
+| **`sentinel_autoencoder.py`** | **AI/ML**       | The training script. Defines the `SentinelAutoencoder` (PyTorch) architecture, loads `benign_traffic.txt`, generates embeddings, and trains the neural network. Outputs `sentinel_autoencoder.pth`.        |
+| **`wafel.db`**                | **Database**    | Persistent SQLite database. Stores every request log with full metadata (`risk_details`, `payload_snippet`, `latency_ms`).                                                                                 |
+| **`attack_simulation.py`**    | **Testing**     | **Red Team Tool**. Simulates various attacks (SQLi, XSS, RCE, Path Traversal) against the WAF to verify detection capabilities and generate "Threat" traffic for the dashboard.                            |
+| **`stress_test.py`**          | **Testing**     | **Load Testing Tool**. Uses `aiohttp` to flood the WAF with 1000+ concurrent requests, verifying that detection latency remains under 10ms.                                                                |
+| **`production.sh`**           | **DevOps**      | Launcher script. Sets up the Python virtual environment, installs requirements, ensures models are trained, and starts the WAF.                                                                            |
+| **`requirements.txt`**        | **Config**      | Python dependencies (`fastapi`, `uvicorn`, `torch`, `sentence-transformers`, `httpx`, `websockets`).                                                                                                       |
+| **`mock_server.py`**          | **Upstream**    | A dummy vulnerable application (Port 3000) acting as the protected origin server (e.g., JuiceShop).                                                                                                        |
+| **`benign_traffic.txt`**      | **Data**        | Dataset of "normal" HTTP requests used to train the Autoencoder on what "safe" looks like.                                                                                                                 |
 
 ---
 
 ## 🏗 Architecture
 
-| Component         | Technology                        | Purpose                                       |
-| :---------------- | :-------------------------------- | :-------------------------------------------- |
-| **Ingestion**     | FastAPI (Async)                   | High-concurrency traffic interception.        |
-| **Embedding**     | `sentence-transformers`           | Converts HTTP payloads to 384-d vectors.      |
-| **Detection**     | `scikit-learn` (Isolation Forest) | Statistical outlier detection.                |
-| **Persistence**   | SQLite                            | **Unlimited** log history with full metadata. |
-| **Observability** | **WebSockets (`/ws`)**            | Event-driven log streaming to Frontend.       |
-| **Frontend**      | React + Vite                      | "Threat Hunter" Split-Pane Interface.         |
-
----
-
-## 📂 Project Structure
-
-| File                          | Purpose                                                                                                                |
-| :---------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
-| **`waf.py`**                  | **Core Engine**. FastAPI app that intercepts traffic, runs AI inference, serves the Dashboard, and handles WebSockets. |
-| **`mock_server.py`**          | **Upstream App**. A dummy vulnerable application (Port 3000) that mimics a real target (JuiceShop).                    |
-| **`train_sentinel.py`**       | **Training Script**. Trains the Isolation Forest model using `benign_traffic.txt`.                                     |
-| **`sentinel_autoencoder.py`** | **Deep Learning**. (Optional) Autoencoder architecture for advanced anomaly detection.                                 |
-| **`attack_simulation.py`**    | **Red Team Tool**. Generates SQLi, XSS, and DoS attacks to test defenses.                                              |
-| **`stress_test.py`**          | **Load Testing**. Uses `aiohttp` to blast the WAF with 1000+ concurrent requests.                                      |
-| **`production.sh`**           | **Launcher**. Automated script to build UI, setup venv, and launch the WAF in production mode.                         |
+| Component         | Technology                          | Purpose                                          |
+| :---------------- | :---------------------------------- | :----------------------------------------------- |
+| **Ingestion**     | FastAPI (Async)                     | High-concurrency traffic interception.           |
+| **Embedding**     | `sentence-transformers`             | Converts HTTP payloads to 384-d vectors.         |
+| **Detection**     | **PyTorch Autoencoder**             | Neural reconstruction error (MSE) as Risk Score. |
+| **Persistence**   | SQLite (`wafel.db`)                 | **Unlimited** log history with full metadata.    |
+| **Observability** | **WebSockets (`/ws`)**              | Event-driven log streaming to Frontend.          |
+| **Frontend**      | Vanilla JS + Tailwind (in `waf.py`) | "Modern Holographic" Neural Grid UI.             |
 
 ---
 
@@ -53,7 +57,7 @@ EtherX Sentinel is a **Production-Grade Web Application Firewall** fueled by adv
 
 ### Deployment (Automated)
 
-The easiest way to run the full stack (WAF + React Frontend + Mock App) is via the production script:
+The easiest way to run the full stack (WAF + Dashboard + Mock App):
 
 ```bash
 ./production.sh
@@ -63,23 +67,22 @@ This will:
 
 1.  Set up the Python VirtualEnv.
 2.  Install dependencies.
-3.  **Verify/Train AI Model** (Auto-trains if missing).
-4.  **Build the React Frontend**.
-5.  Launch the Mock App (Port 3000) & WAF (Port 8000).
+3.  **Train the AI Model** (if `sentinel_autoencoder.pth` is missing).
+4.  Launch the Mock App (Port 3000) & WAF (Port 8000).
 
-Visit **http://localhost:8000/dashboard** to see the Sentinel Prime UI.
+Visit **http://localhost:8000/dashboard** to see the **EtherX Sentinel UI**.
 
 ### Manual Run
 
 ```bash
-# 1. Build Frontend
-cd dashboard-ui && npm install && npm run build && cd ..
+# 1. Install Dependencies
+pip install -r requirements.txt
 
-# 2. Train Model
-python train_sentinel.py
+# 2. Train the Neural Brain (if needed)
+python sentinel_autoencoder.py
 
 # 3. Start WAF
-uvicorn waf:app --host 0.0.0.0 --port 8000
+python waf.py
 ```
 
 ---
@@ -88,11 +91,11 @@ uvicorn waf:app --host 0.0.0.0 --port 8000
 
 ### Configuration (`env`)
 
-| Variable          | Default                 | Description                              |
-| :---------------- | :---------------------- | :--------------------------------------- |
-| `TARGET_URL`      | `http://localhost:3000` | Upstream application to protect.         |
-| `BLOCK_THRESHOLD` | `20.0`                  | Sensitivity of the Sentinel model.       |
-| `MODEL_PATH`      | `./sentinel_model.pkl`  | Path to the serialized Isolation Forest. |
+| Variable          | Default                 | Description                      |
+| :---------------- | :---------------------- | :------------------------------- |
+| `TARGET_URL`      | `http://localhost:3000` | Upstream application to protect. |
+| `BLOCK_THRESHOLD` | `20.0`                  | MSE Threshold for blocking.      |
+| `MODEL_PATH`      | `./sentinel_model.pkl`  | Path to the serialized model.    |
 
 ### Monitoring
 
@@ -105,76 +108,33 @@ Logs are emitted to `stdout` in JSON format:
   "method": "POST",
   "risk_score": 45.2,
   "action": "BLOCK",
-  "risk_details": { "sentinel_confidence": 0.45 },
+  "risk_details": { "neural_anomaly": true, "reconstruction_error": 0.045 },
   "latency_ms": 8.4
 }
 ```
 
 ---
 
-## 🛡 Verification
+## 🛡 Verification & Testing
 
-Run the included verification suite:
+### 1. Simulated Attacks (Red Team)
+
+Run the attack simulator to fire SQLi, XSS, and RCE payloads:
 
 ```bash
-./demo.sh
+python attack_simulation.py
 ```
 
-**Attack Matrices Verified:**
+### 2. Stress Testing
 
-- ✅ SQL Injection (Boolean-based, Union-based)
-- ✅ XSS (Stored, Reflected)
-- ✅ Remote Code Execution (Shell injection)
-- ✅ Path Traversal (LFI)
-
----
-
-_EtherX Security Research | 2026_
-
----
-
-## 🕵️‍♂️ Feature Spotlight: Threat Hunter UI
-
-The new **Phase 11 Dashboard** is designed for high-velocity SOC operations:
-
-- **Split-Pane Layout**:
-  - **Left**: High-Density Log Grid (Real-time stream).
-  - **Right**: Inspector Panel (Full Request Forensics).
-- **Deep Visibility**:
-  - Click any log to inspect **Full Request URL**, **Headers**, **User-Agent**, and **Raw Payloads**.
-  - Visual Risk Breakdown (Entropy vs. Sentinel AI Score).
-
----
-
-## ⚡ Stress Testing
-
-Validate production resilience with the included async load generator:
+Validate resilience under high load (1000+ RPS):
 
 ```bash
 python stress_test.py
 ```
 
-- Simulates **1000+ Concurrent Connections**.
-- Uses `aiohttp` for non-blocking swarms.
-- Proves WAF latency stays under 10ms even under load.
+_Proves WAF latency stays under 10ms even under load._
 
 ---
 
-## 🏆 Hackathon Compliance Matrix
-
-| Requirement                    | Implementation Details                                                                      | File / Code Ref                         |
-| ------------------------------ | ------------------------------------------------------------------------------------------- | --------------------------------------- |
-| **1. Log Ingestion**           | Live interception via FastAPI Middleware.                                                   | `waf.py`: `waf_middleware`              |
-| **2. Parsing & Normalization** | Extracts Method/Path/Body. **Redacts PII (<EMAIL>)** and normalizes IDs (<ID>).             | `waf.py`: `normalize_payload()`         |
-| **3. Tokenization**            | Uses `BertTokenizer` via `sentence-transformers`.                                           | `train_sentinel.py`: `all-MiniLM-L6-v2` |
-| **4. Model Training**          | Anomaly Detection (Isolation Forest) on Transformer Embeddings. Trained on **Benign Only**. | `train_sentinel.py`                     |
-| **5. Real-Time Inference**     | Async inference pipeline in WAF Loop.                                                       | `waf.py`: `get_risk_assessment()`       |
-| **6. Demonstration**           | `attack_simulation.py` (Red Team) vs `generate_traffic.py` (Green Team).                    | `demo.sh`                               |
-
-### Bonus Features Implemented
-
-- [x] **Advanced Ingestion**: Real-time Proxy + Batch Training Support.
-- [x] **Privacy & Security**: Automated Redaction of Emails and UUIDs.
-- [x] **Server Integration**: Deployed as a Reverse Proxy Sidecar.
-- [x] **Non-Blocking**: Fully Async FastAPI Architecture.
-- [x] **UI/UX**: "Cyberpunk" Operator Dashboard (React + Vite). (Not graded but cool).
+_EtherX Security Research | 2026_
