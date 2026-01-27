@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer, useRef } from 'react';
-import Radar from './components/Radar';
+import ThreatGlobe from './components/Globe';
 import MetricCard from './components/MetricCard';
 
 // --- Reducer ---
@@ -356,11 +356,20 @@ function App() {
               </div>
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center opacity-30">
-              <Icons.Globe />
-              <span className="mt-2 text-xs uppercase tracking-widest">
-                Awaiting Data Stream...
-              </span>
+            <div className="h-full flex flex-col items-center justify-center relative bg-black/50">
+              {/* HOLOGRAPHIC GLOBE */}
+              <div className="w-full h-full absolute inset-0">
+                <ThreatGlobe logs={state.logs} />
+              </div>
+
+              <div className="z-10 bg-black/60 p-4 rounded-xl border border-[#00ff41]/20 backdrop-blur-sm text-center">
+                <h2 className="text-xl font-black text-white tracking-widest mb-1">
+                  GLOBAL THREAT MAP
+                </h2>
+                <div className="text-[10px] text-[#00ff41] uppercase animate-pulse">
+                  Scanning Neural Network...
+                </div>
+              </div>
             </div>
           )}
         </div>

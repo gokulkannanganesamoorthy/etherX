@@ -24,13 +24,28 @@ EtherX Sentinel is a **Production-Grade Web Application Firewall** fueled by adv
 
 ## 🏗 Architecture
 
-| Component         | Technology                        | Purpose                                  |
-| :---------------- | :-------------------------------- | :--------------------------------------- |
-| **Ingestion**     | FastAPI (Async)                   | High-concurrency traffic interception.   |
-| **Embedding**     | `sentence-transformers`           | Converts HTTP payloads to 384-d vectors. |
-| **Detection**     | `scikit-learn` (Isolation Forest) | Statistical outlier detection.           |
-| **Observability** | **WebSockets (`/ws`)**            | Event-driven log streaming to Frontend.  |
-| **Frontend**      | React + Vite                      | "Threat Hunter" Split-Pane Interface.    |
+| Component         | Technology                        | Purpose                                       |
+| :---------------- | :-------------------------------- | :-------------------------------------------- |
+| **Ingestion**     | FastAPI (Async)                   | High-concurrency traffic interception.        |
+| **Embedding**     | `sentence-transformers`           | Converts HTTP payloads to 384-d vectors.      |
+| **Detection**     | `scikit-learn` (Isolation Forest) | Statistical outlier detection.                |
+| **Persistence**   | SQLite                            | **Unlimited** log history with full metadata. |
+| **Observability** | **WebSockets (`/ws`)**            | Event-driven log streaming to Frontend.       |
+| **Frontend**      | React + Vite                      | "Threat Hunter" Split-Pane Interface.         |
+
+---
+
+## 📂 Project Structure
+
+| File                          | Purpose                                                                                                                |
+| :---------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **`waf.py`**                  | **Core Engine**. FastAPI app that intercepts traffic, runs AI inference, serves the Dashboard, and handles WebSockets. |
+| **`mock_server.py`**          | **Upstream App**. A dummy vulnerable application (Port 3000) that mimics a real target (JuiceShop).                    |
+| **`train_sentinel.py`**       | **Training Script**. Trains the Isolation Forest model using `benign_traffic.txt`.                                     |
+| **`sentinel_autoencoder.py`** | **Deep Learning**. (Optional) Autoencoder architecture for advanced anomaly detection.                                 |
+| **`attack_simulation.py`**    | **Red Team Tool**. Generates SQLi, XSS, and DoS attacks to test defenses.                                              |
+| **`stress_test.py`**          | **Load Testing**. Uses `aiohttp` to blast the WAF with 1000+ concurrent requests.                                      |
+| **`production.sh`**           | **Launcher**. Automated script to build UI, setup venv, and launch the WAF in production mode.                         |
 
 ---
 
