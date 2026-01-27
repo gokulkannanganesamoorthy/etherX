@@ -63,9 +63,9 @@ This will:
 
 1.  Set up the Python VirtualEnv.
 2.  Install dependencies.
-3.  **Build the React Frontend** (new).
-4.  Launch the Mock Upstream App (Port 3000).
-5.  Launch the WAF & Dashboard (Port 8000).
+3.  **Verify/Train AI Model** (Auto-trains if missing).
+4.  **Build the React Frontend**.
+5.  Launch the Mock App (Port 3000) & WAF (Port 8000).
 
 Visit **http://localhost:8000/dashboard** to see the Sentinel Prime UI.
 
