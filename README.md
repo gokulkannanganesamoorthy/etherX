@@ -114,6 +114,32 @@ Logs are emitted to `stdout` in JSON format:
 }
 ```
 
+### Dashboard Interface
+
+#### Threat Intelligence Panel
+
+- **THREAT INTEL**: The central module for monitoring active cyber threats.
+- **ACTIVE MONITORING**: System status indicating real-time protection is live.
+- **SQL INJECTION**: Real-time counter of blocked SQL Injection attempts (e.g., `UNION SELECT`, `OR 1=1`).
+- **XSS / SCRIPTING**: Real-time counter of blocked Cross-Site Scripting payloads (e.g., `<script>alert(1)</script>`).
+- **NEURAL ANOMALIES**: Count of zero-day attacks detected solely by the AI model's reconstruction error.
+- **TOTAL TRAFFIC**: The heartbeat of the system; total number of HTTP requests processed.
+- **LATENCY**: Average processing time per request (in ms).
+- **ALLOWED**: Total legitimate requests passed to the upstream server.
+- **THREATS**: Total malicious requests rejected by the WAF.
+
+#### Live Inspection Feed
+
+- **TIME**: Precision timestamp of the intercepted request.
+- **METHOD**: HTTP verb used (GET, POST, PUT, DELETE).
+- **REQUEST FLOW**: Visual trace of the connection (Client ➜ Server).
+- **RISK SCORE**: AI-assigned probability of malicious intent (0-100). Higher is riskier.
+- **STATUS**: Final decision taken by the Sentinel (`ALLOWED` or `DENIED`).
+- **SOURCE IP**: Originating IP address of the potential attacker.
+- **USER AGENT**: Fingerprint of the client software/browser.
+- **FULL URL**: The complete request path and query parameters targeted.
+- **RISK ANALYSIS**: Detailed JSON breakdown from the Neural Engine, including confidence scores and matched attack vectors.
+
 ---
 
 ## 🛡 Verification & Testing
