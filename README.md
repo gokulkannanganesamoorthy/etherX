@@ -5,6 +5,12 @@
 
 EtherX Sentinel is a **Production-Grade Web Application Firewall** fueled by **Deep Learning Anomaly Detection**. It utilizes **Sentence Transformers** to embed HTTP traffic into high-dimensional vector space and a **PyTorch Autoencoder** to identify malicious deviations (Zero-Day Attacks) with <10ms latency.
 
+### 🎥 System Demo
+
+[![EtherX Sentinel Demo](https://img.youtube.com/vi/placeholder/0.jpg)](etherx_sentinal_demo.mp4)
+
+> _Click to watch the full system demonstration: [etherx_sentinal_demo.mp4](etherx_sentinal_demo.mp4)_
+
 ---
 
 ## 🚀 Key Features
