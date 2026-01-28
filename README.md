@@ -7,7 +7,7 @@ EtherX Sentinel is a **Production-Grade Web Application Firewall** fueled by **D
 
 ### 🎥 System Demo
 
-[![EtherX Sentinel Demo](https://img.youtube.com/vi/placeholder/0.jpg)](etherx_sentinal_demo.mp4)
+[![EtherX Sentinel Demo](dashboard_preview.png)](etherx_sentinal_demo.mp4)
 
 > _Click to watch the full system demonstration: [etherx_sentinal_demo.mp4](etherx_sentinal_demo.mp4)_
 
