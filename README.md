@@ -49,6 +49,25 @@ Detailed explanation of all files in this repository:
 
 ## 🏗 Architecture
 
+```mermaid
+graph TD
+    A[Client Traffic] -->|HTTP Request| B(Ingestion Layer<br>FastAPI)
+    B --> C{Traffic Processor}
+
+    subgraph "EtherX Sentinel Core"
+    C -->|Extract Payload| D[Sentence Transformer<br>Embedding]
+    D -->|384-d Vector| E[Neural Encoder<br>PyTorch Model]
+    E -->|Reconstruction| F{Anomaly Detector}
+    F -->|High Error > 20.0| G[BLOCK]
+    F -->|Low Error| H[ALLOW]
+    end
+
+    G -->|Log Event| I[(Behavioral DB<br>wafel.db)]
+    H -->|Proxy| J[Upstream App<br>Port 3000]
+
+    I -->|WebSocket Stream| K[Holographic Dashboard<br>Neural Grid UI]
+```
+
 | Component         | Technology                          | Purpose                                          |
 | :---------------- | :---------------------------------- | :----------------------------------------------- |
 | **Ingestion**     | FastAPI (Async)                     | High-concurrency traffic interception.           |
