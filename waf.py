@@ -653,6 +653,25 @@ async def dashboard():
                  0%, 100% { opacity: 1; filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.7)); }
                  50% { opacity: .5; filter: drop-shadow(0 0 2px rgba(0, 243, 255, 0.3)); }
              }
+
+             /* Tutorial Styles */
+             #tutorial-overlay { transition: opacity 0.5s ease; }
+             .tutorial-highlight { 
+                 position: relative; 
+                 z-index: 60; 
+                 box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85); 
+                 border-radius: 12px;
+                 pointer-events: none;
+             }
+             .tutorial-box {
+                 position: fixed;
+                 z-index: 70;
+                 width: 320px;
+                 opacity: 0;
+                 transform: translateY(10px);
+                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+             }
+             .tutorial-box.visible { opacity: 1; transform: translateY(0); }
         </style>
     </head>
     <body class="h-screen flex flex-col overflow-hidden selection:bg-holo-cyan selection:text-black">
@@ -661,7 +680,7 @@ async def dashboard():
         <div class="fixed inset-0 bg-cyber-grid bg-grid opacity-20 pointer-events-none z-0"></div>
 
         <!-- Navbar -->
-        <nav class="border-b border-white/5 bg-black/20 backdrop-blur-md z-40">
+        <nav class="border-b border-white/5 bg-black/20 backdrop-blur-md z-40" id="header-section">
             <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4">
                      <div class="relative group">
@@ -680,6 +699,12 @@ async def dashboard():
                         <div class="h-2 w-2 bg-holo-cyan rounded-full animate-pulse-glow"></div>
                         <span class="text-xs font-medium text-holo-cyan tracking-wider uppercase">System Active</span>
                      </div>
+
+                     <button onclick="startTutorial()" class="p-2 rounded hover:bg-white/5 text-holo-cyan transition-colors" title="Start Tutorial">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                     </button>
                      <span class="font-mono text-xs text-white/30">V.11.0.4</span>
                 </div>
             </div>
@@ -692,7 +717,7 @@ async def dashboard():
             <div class="lg:col-span-4 flex flex-col gap-6">
                 
                 <!-- THREAT INTELLIGENCE CARD -->
-                <div class="glass-panel rounded-2xl p-6 relative flex flex-col overflow-hidden min-h-[300px]">
+                <div class="glass-panel rounded-2xl p-6 relative flex flex-col overflow-hidden min-h-[300px]" id="threat-panel">
                     <div class="flex justify-between items-start mb-6">
                          <div>
                             <h3 class="text-sm font-bold text-white tracking-widest uppercase">Threat Intel</h3>
@@ -748,7 +773,7 @@ async def dashboard():
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4" id="stats-grid">
                      <div class="glass-panel rounded-2xl p-5 hover:bg-white/5 transition-colors group">
                          <div class="text-xs font-bold text-white/40 uppercase mb-2 group-hover:text-white/60 transition-colors">Total Traffic</div>
                          <div class="text-3xl font-bold text-white tracking-tight font-mono" id="total-req">0</div>
@@ -774,7 +799,7 @@ async def dashboard():
             </div>
 
             <!-- Right Panel: Feed -->
-            <div class="lg:col-span-8 flex flex-col h-full min-h-0">
+            <div class="lg:col-span-8 flex flex-col h-full min-h-0" id="feed-panel">
                 <div class="glass-panel rounded-2xl flex-1 flex flex-col overflow-hidden">
                     <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/5 backdrop-blur-xl">
                         <div class="flex items-center gap-3">
@@ -1068,8 +1093,9 @@ async def dashboard():
                                             <div class="grid grid-cols-3 gap-6 mb-4 pb-4 border-b border-white/5">
                                                  <div><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Source IP</span><span class="font-mono text-white">${log.client_ip}</span></div>
                                                  <div><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">Latency</span><span class="font-mono text-white">${log.latency_ms}ms</span></div>
-                                                 <div class="truncate"><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span><span class="font-mono text-white/70 truncate block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span></div>
+                                                 <div class=""><span class="block text-white/30 uppercase text-[10px] tracking-widest mb-1">User Agent</span><span class="font-mono text-white/70 break-all whitespace-normal block" title="${log.user_agent}">${log.user_agent || 'UNKNOWN'}</span></div>
                                             </div>
+                                            <div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Full URL</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all text-xs">${log.full_url || log.path}</div></div>
                                             ${log.payload_snippet ? `<div class="mb-4"><div class="text-holo-cyan text-[10px] uppercase tracking-widest mb-2 font-bold">Payload Dump</div><div class="bg-black/50 border border-white/10 p-3 rounded font-mono text-white/70 break-all select-all">${log.payload_snippet}</div></div>` : ''}
                                             <div><div class="text-holo-purple text-[10px] uppercase tracking-widest mb-2 font-bold">Risk Analysis</div><pre class="font-mono text-white/60 whitespace-pre-wrap text-[10px]">${detailsJson}</pre></div>
                                         </div>
@@ -1088,6 +1114,163 @@ async def dashboard():
             fetchStats();
             connectWebSocket();
         </script>
+    <!-- Tutorial Elements -->
+    <div id="tutorial-overlay" class="fixed inset-0 z-50 hidden opacity-0 pointer-events-none"></div>
+    <div id="tutorial-info" class="tutorial-box glass-panel p-6 rounded-xl border border-holo-cyan/30 hidden">
+        <div class="flex flex-col gap-3">
+            <h3 class="text-holo-cyan font-bold tracking-widest uppercase text-sm" id="tut-title">TITLE</h3>
+            <p class="text-white/80 text-xs leading-relaxed" id="tut-text">Description goes here.</p>
+            <div class="flex justify-end gap-2 mt-2">
+                <button onclick="endTutorial()" class="px-3 py-1.5 rounded text-white/40 text-[10px] hover:text-white uppercase tracking-wider transition-colors">Skip</button>
+                <button id="tut-next-btn" onclick="nextStep()" class="px-4 py-1.5 rounded bg-holo-cyan/10 border border-holo-cyan/50 text-holo-cyan text-[10px] hover:bg-holo-cyan/20 uppercase tracking-wider font-bold transition-all shadow-lg shadow-holo-cyan/10">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tutorial Logic
+        let currentStep = -1;
+        const tutorialSteps = [
+            { 
+                target: null, 
+                title: "ETHERX SENTINEL", 
+                text: "Welcome to the Advanced Security Protocol interface. This dashboard allows you to monitor and analyze network traffic in real-time. Let's take a quick tour of your command center." 
+            },
+            { 
+                target: 'header-section', 
+                title: "SYSTEM STATUS", 
+                text: "The Top Bar displays key system information. 'System Active' confirms that the WAF is online and interception protocols are engaged. Version 11.0.4 is currently running." 
+            },
+            { 
+                target: 'threat-panel', 
+                title: "THREAT INTELLIGENCE", 
+                text: "This panel visualizes active threats. It breaks down blocked requests by category: SQL Injections, XSS Scripting attacks, and Neural Anomalies detected by the AI model." 
+            },
+            { 
+                target: 'stats-grid', 
+                title: "TRAFFIC STATISTICS", 
+                text: "Global metrics at a glance. Track the Total Request volume, Monitor Network Latency, and compare the ratio of Allowed vs. Blocked traffic." 
+            },
+            { 
+                target: 'feed-panel', 
+                title: "LIVE INSPECTION FEED", 
+                text: "The main console streams logs in real-time. Each row represents a request. Click on a row to expand deep packet details, including Source IP, User Agent, and the full Risk Analysis JSON." 
+            }
+        ];
+
+        function startTutorial() {
+            currentStep = -1;
+            const overlay = document.getElementById('tutorial-overlay');
+            const info = document.getElementById('tutorial-info');
+            
+            overlay.classList.remove('hidden');
+            requestAnimationFrame(() => overlay.classList.remove('opacity-0'));
+            info.classList.remove('hidden');
+            
+            nextStep();
+        }
+
+        function endTutorial() {
+            const overlay = document.getElementById('tutorial-overlay');
+            const info = document.getElementById('tutorial-info');
+            
+            // Cleanup highlights
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+                el.style.zIndex = '';
+            });
+
+            overlay.classList.add('opacity-0');
+            info.classList.remove('visible');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                info.classList.add('hidden');
+            }, 500);
+        }
+
+        function nextStep() {
+            // Cleanup previous
+            if (currentStep >= 0) {
+                const prev = tutorialSteps[currentStep];
+                if (prev.target) {
+                   const el = document.getElementById(prev.target);
+                   if(el) {
+                       el.classList.remove('tutorial-highlight');
+                       el.style.zIndex = ''; 
+                   }
+                }
+            }
+
+            currentStep++;
+            if (currentStep >= tutorialSteps.length) {
+                endTutorial();
+                return;
+            }
+
+            const step = tutorialSteps[currentStep];
+            const info = document.getElementById('tutorial-info');
+            const nextBtn = document.getElementById('tut-next-btn');
+            
+            // Update Text
+            document.getElementById('tut-title').innerText = step.title;
+            document.getElementById('tut-text').innerText = step.text;
+            
+            if (currentStep >= tutorialSteps.length - 1) {
+                nextBtn.innerText = "Finish";
+                nextBtn.onclick = endTutorial; 
+            } else {
+                nextBtn.innerText = "Next";
+                nextBtn.onclick = nextStep;
+            }
+
+            // Positioning
+            if (step.target) {
+                const el = document.getElementById(step.target);
+                if (el) {
+                    el.classList.add('tutorial-highlight');
+                    // Bring to front
+                    // We need to verify if z-index conflict exists, but overlay uses huge shadow 
+                    
+                    const rect = el.getBoundingClientRect();
+                    const infoRect = info.getBoundingClientRect();
+                    
+                    // Default: Bottom Right of element
+                    let top = rect.bottom + 20;
+                    let left = rect.left + (rect.width / 2) - (infoRect.width / 2);
+                    
+                    // Boundary Checks
+                    if (left + infoRect.width > window.innerWidth) left = window.innerWidth - infoRect.width - 20;
+                    if (left < 20) left = 20;
+                    
+                    // Vertical Clamp
+                    if (top + infoRect.height > window.innerHeight) {
+                        // If it doesn't fit below, try above
+                        top = rect.top - infoRect.height - 20;
+                        // If it doesn't fit above (e.g. Feed Panel), put it inside at the top
+                        if (top < 80) top = rect.top + 20;
+                    }
+
+                    info.style.top = `${top}px`;
+                    info.style.left = `${left}px`;
+                }
+            } else {
+                // Center Screen
+                info.style.top = '50%';
+                info.style.left = '50%';
+                info.style.transform = 'translate(-50%, -50%)';
+            }
+
+            // Animate In
+            info.classList.remove('visible');
+            requestAnimationFrame(() => {
+                if(!step.target) info.style.transform = 'translate(-50%, -50%)'; // Keep center transform
+                else info.style.transform = 'translateY(0)';
+                
+                info.classList.add('visible');
+            });
+        }
+    </script>
     </body>
     </html>
     """

@@ -1,193 +1,138 @@
-GET /#/contact 
-GET /api/Feedbacks 
-GET / 
-GET /rest/products/search?q=green 
-GET /api/Feedbacks 
-GET /api/BasketItems 
-POST /api/BasketItems {"test": "data", "id": 6}
-GET /api/Quantitys 
-GET /rest/products/search?q=banana 
-POST /api/BasketItems {"test": "data", "id": 9}
-GET /rest/products/search?q=orange 
-GET /#/login 
+GET /rest/products/search?q=juice 
 GET /api/Challenges 
-GET /#/register 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /api/Challenges 
-GET /#/basket 
-GET /api/Feedbacks 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /api/Quantitys 
-GET /assets/public/images/carousel/1.jpg 
-GET /rest/products/search?q=orange 
-GET /assets/public/images/carousel/1.jpg 
-GET /#/search 
-POST /rest/products/search?q=apple {"test": "data", "id": 24}
-GET /api/Quantitys 
-GET /#/search 
-GET /#/search 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /#/score-board 
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /#/contact 
-GET /#/login 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /assets/public/favicon_1.ico 
-POST /socket.io/?EIO=3&transport=polling&t=N8K8_1z {"test": "data", "id": 36}
-GET /api/Feedbacks 
-GET /api/Quantitys 
-GET /#/basket 
-GET /#/score-board 
-GET /rest/products/search?q=juice 
-GET /rest/products/search?q=orange 
-POST /api/Challenges {"test": "data", "id": 43}
-GET /#/basket 
-GET /api/Quantitys 
-GET /#/score-board 
-GET /rest/products/search?q=orange 
-GET /api/Products 
-POST /assets/public/images/products/orange_juice.jpg {"test": "data", "id": 49}
-GET / 
-GET /api/Products 
-GET /assets/public/images/carousel/2.jpg 
-GET /rest/products/search?q=banana 
-POST /#/contact {"test": "data", "id": 54}
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /assets/public/favicon_1.ico 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /api/Feedbacks 
-GET /#/login 
-POST /rest/products/search?q=orange {"test": "data", "id": 60}
-GET /api/Products 
-POST /assets/public/images/carousel/1.jpg {"test": "data", "id": 62}
-GET /assets/public/images/carousel/1.jpg 
-GET /#/search 
-POST /api/Users {"test": "data", "id": 65}
-POST /#/search {"test": "data", "id": 66}
-GET /assets/public/images/carousel/1.jpg 
-GET /#/register 
-GET /api/Challenges 
-GET /assets/public/images/carousel/1.jpg 
-GET / 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /rest/products/search?q=juice 
-GET / 
-GET /#/login 
-GET /api/Users 
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /rest/products/search?q=banana 
-GET /rest/products/search?q=juice 
-GET /api/BasketItems 
-GET /rest/products/search?q=banana 
-GET /assets/public/favicon_1.ico 
-GET /assets/public/images/carousel/2.jpg 
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /#/contact 
-GET /rest/products/search?q=juice 
-GET /rest/products/search?q=orange 
-GET / 
-GET /#/contact 
-GET /#/score-board 
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /#/basket 
-GET /#/register 
-POST /assets/public/images/carousel/2.jpg {"test": "data", "id": 94}
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /rest/products/search?q=apple 
-GET / 
-GET /api/Challenges 
-GET /#/basket 
-GET /#/register 
-GET /api/BasketItems 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /rest/products/search?q=banana 
-GET /api/BasketItems 
-GET /rest/products/search?q=orange 
-GET /assets/public/favicon_1.ico 
-GET /api/Feedbacks 
-GET /#/contact 
-GET /#/about 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /assets/public/images/carousel/1.jpg 
-POST /#/register {"test": "data", "id": 112}
-GET /api/Users 
-GET /#/register 
-POST /#/contact {"test": "data", "id": 115}
-POST /#/basket {"ProductId": 4, "quantity": 1}
-GET /#/search 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /#/login 
-GET /rest/products/search?q=banana 
-GET /api/Products 
-GET /#/contact 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /#/basket 
-POST /#/about {"test": "data", "id": 125}
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /#/basket 
-GET /rest/products/search?q=banana 
-GET /api/Products 
-GET /assets/public/images/carousel/2.jpg 
-GET /api/Quantitys 
-POST /rest/products/search?q=banana {"test": "data", "id": 132}
-POST /assets/public/favicon_1.ico {"test": "data", "id": 133}
-GET /rest/products/search?q=apple 
-GET /assets/public/favicon_1.ico 
-GET /rest/products/search?q=apple 
-POST /rest/products/search?q=orange {"test": "data", "id": 137}
-GET /rest/products/search?q=juice 
-POST /#/register {"test": "data", "id": 139}
-GET /assets/public/favicon_1.ico 
-GET /rest/products/search?q=juice 
-GET /rest/products/search?q=green 
-GET /api/Users 
-GET /assets/public/images/carousel/2.jpg 
-GET /#/search 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /#/score-board 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
-GET /#/about 
-GET /#/register 
-GET /rest/products/search?q=green 
-GET /#/score-board 
-GET /#/search 
-GET /api/Quantitys 
-GET /rest/products/search?q=green 
-POST /#/search {"test": "data", "id": 157}
-GET /#/register 
-GET /rest/products/search?q=orange 
-POST /assets/public/images/products/apple_juice.jpg {"test": "data", "id": 160}
-POST /#/basket {"ProductId": 10, "quantity": 1}
-GET /#/about 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /api/Feedbacks 
-POST /rest/products/search?q=orange {"test": "data", "id": 165}
-GET /assets/public/images/carousel/1.jpg 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /#/basket 
-GET /#/about 
-GET /#/basket 
-GET /assets/public/favicon_1.ico 
-GET /rest/products/search?q=apple 
-GET /#/search 
-GET /rest/products/search?q=apple 
-GET /rest/products/search?q=apple 
-GET /api/Feedbacks 
-GET /#/login 
-GET /assets/public/images/products/apple_juice.jpg 
-GET /api/BasketItems 
 GET /#/about 
 GET /rest/products/search?q=green 
-GET / 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /rest/products/search?q=green 
-GET /assets/public/images/products/orange_juice.jpg 
-GET /#/search 
-GET /api/BasketItems 
+GET /rest/products/search?q=apple 
+GET /rest/products/search?q=apple 
+GET /assets/public/favicon_1.ico 
 GET /api/Feedbacks 
 GET /api/Users 
+GET /api/Users 
+GET /rest/products/search?q=juice 
+GET /assets/public/images/products/orange_juice.jpg 
+GET /api/Quantitys 
+GET /assets/public/favicon_1.ico 
+GET /assets/public/images/products/apple_juice.jpg 
+GET /api/Products 
+GET /#/login 
+GET /api/Challenges 
+GET /api/Quantitys 
+GET /assets/public/images/products/orange_juice.jpg 
+GET /api/Users 
+GET /rest/products/search?q=apple 
+GET /api/BasketItems 
+GET /rest/products/search?q=juice 
+GET /rest/products/search?q=apple 
+GET /#/register 
+GET /#/basket 
+GET /#/register 
+GET /#/login 
+GET /api/Quantitys 
+GET /rest/products/search?q=apple 
+POST /#/register {"test": "data", "id": 31}
+GET /api/Feedbacks 
+GET /api/Challenges 
+GET /api/Challenges 
+GET /rest/products/search?q=juice 
+GET /assets/public/images/products/orange_juice.jpg 
+GET /rest/products/search?q=green 
+GET /#/basket 
+GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
+GET /rest/products/search?q=green 
+GET /assets/public/favicon_1.ico 
 GET /assets/public/images/carousel/1.jpg 
+GET /api/BasketItems 
+GET /rest/products/search?q=apple 
+GET /api/Feedbacks 
+GET /api/Feedbacks 
+GET /rest/products/search?q=green 
+GET /api/Challenges 
+GET /rest/products/search?q=juice 
+GET /api/Feedbacks 
+GET /#/search 
+GET /#/score-board 
+POST /api/Products {"test": "data", "id": 53}
+GET /api/Challenges 
+GET /api/Feedbacks 
+GET /#/login 
+GET /#/register 
+GET /#/login 
+POST /api/BasketItems {"test": "data", "id": 59}
+GET /#/about 
+GET /rest/products/search?q=apple 
+POST /assets/public/images/carousel/2.jpg {"test": "data", "id": 62}
+GET /#/search 
+GET /api/Quantitys 
+POST /api/Feedbacks {"test": "data", "id": 65}
+GET /rest/products/search?q=juice 
+GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
+POST /#/contact {"test": "data", "id": 68}
+GET /#/score-board 
+GET /api/Challenges 
+GET /assets/public/favicon_1.ico 
+GET /api/Quantitys 
+POST /assets/public/images/carousel/2.jpg {"test": "data", "id": 73}
+GET /rest/products/search?q=apple 
+GET /rest/products/search?q=orange 
+GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
+GET /#/login 
+GET /assets/public/images/products/apple_juice.jpg 
+POST /rest/products/search?q=orange {"test": "data", "id": 79}
+GET /assets/public/images/products/apple_juice.jpg 
+GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
+GET /api/Users 
+POST /#/register {"test": "data", "id": 83}
+GET /#/basket 
+GET /rest/products/search?q=orange 
+GET /assets/public/images/products/apple_juice.jpg 
+GET /rest/products/search?q=orange 
+GET /assets/public/images/carousel/2.jpg 
+GET /rest/products/search?q=apple 
+GET /#/login 
+GET /api/Feedbacks 
+GET /assets/public/images/products/orange_juice.jpg 
+GET /rest/products/search?q=juice 
+GET /assets/public/favicon_1.ico 
+GET /#/register 
+GET /assets/public/images/carousel/2.jpg 
+GET /#/search 
+GET /#/score-board 
+GET /rest/products/search?q=banana 
+POST /#/search {"test": "data", "id": 100}
+GET /rest/products/search?q=juice 
+GET / 
+GET /api/Users 
+GET /#/search 
+GET /api/Challenges 
+GET /rest/products/search?q=orange 
+GET / 
+GET /api/Quantitys 
+GET /#/login 
+GET /assets/public/images/products/apple_juice.jpg 
+GET /api/BasketItems 
+GET /#/search 
+GET /assets/public/images/carousel/2.jpg 
+GET /rest/products/search?q=apple 
+POST /assets/public/images/carousel/2.jpg {"test": "data", "id": 115}
+GET /api/Quantitys 
+GET /api/BasketItems 
+GET /api/Users 
+GET /#/contact 
+GET /assets/public/images/carousel/1.jpg 
+POST /rest/products/search?q=orange {"test": "data", "id": 121}
+GET /api/Feedbacks 
+GET /#/contact 
+POST /#/contact {"test": "data", "id": 124}
+GET /api/Feedbacks 
+GET /api/Feedbacks 
+GET /socket.io/?EIO=3&transport=polling&t=N8K8_1z 
+GET /api/Challenges 
+GET /assets/public/images/carousel/2.jpg 
+GET /rest/products/search?q=banana 
+GET /#/basket 
+POST /rest/products/search?q=orange {"test": "data", "id": 132}
+GET /api/Products 
+GET /assets/public/images/carousel/2.jpg 
+GET /api/Feedbacks 
+GET /api/BasketItems 
+GET /rest/products/search?q=green 
