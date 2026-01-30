@@ -65,7 +65,17 @@ def create_presentation():
         "   - neural_anomaly: Boolean flag for high-confidence blocks."
     ])
 
-    # Slide 4: Key Innovations
+    # Slide 5: The Training Pipeline
+    add_slide(prs, "The Training Pipeline", [
+        "1. Data Gen: 'generate_traffic.py' creates synthetic 'valid' traffic.",
+        "2. Vectorization: Traffic -> Embeddings (Lists of numbers).",
+        "3. Self-Supervised Learning: Model forces itself to learn patterns.",
+        "   - Loss Function: Mean Squared Error (MSE).",
+        "   - Goal: Output ≈ Input.",
+        "4. Result: Model becomes an expert at 'Normality'."
+    ])
+
+    # Slide 6: Key Innovations
     add_slide(prs, "Key Innovations", [
         "Holographic Dashboard: Real-time, WebSocket-powered Neural Grid UI.",
         "Live Threat Intel: Active monitoring of SQLi, XSS, and Anomalies.",

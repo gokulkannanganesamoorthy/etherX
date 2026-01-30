@@ -73,7 +73,30 @@ Every request generates a detailed forensic report:
 
 ---
 
-## Slide 5: Key Innovations
+## Slide 5: The Training Pipeline
+
+### Teaching the AI "Normality"
+
+1.  **Data Generation** (`generate_traffic.py`):
+    - We simulate thousands of **valid** user interactions (Logins, Searches, Browsing).
+    - Result: `benign_traffic.txt` (Dataset of "Good Behavior").
+
+2.  **Vectorization**:
+    - Each request is converted into a list of numbers (Embedding).
+    - _Example_: `"GET /login"` $\rightarrow$ `[0.1, -0.5, 0.8, ...]`
+
+3.  **Self-Supervised Learning**:
+    - The model forces itself to compress and decompress these vectors.
+    - **Loss Function**: Mean Squared Error (MSE).
+    - _Goal_: Make `Output` $\approx$ `Input` for all training data.
+
+4.  **The Result**:
+    - The model becomes an expert at reconstructing safe traffic.
+    - When it sees an **Attack** (which it never studied), it fails to reconstruct it, triggering an alert.
+
+---
+
+## Slide 6: Key Innovations
 
 - **Holographic Dashboard**: A real-time, WebSocket-powered "Neural Grid" UI that visualized the AI's decision-making process.
 - **Live Threat Intel**: Active monitoring of SQLi, XSS, and Neural Anomalies.
@@ -82,7 +105,7 @@ Every request generates a detailed forensic report:
 
 ---
 
-## Slide 6: Architecture
+## Slide 7: Architecture
 
 _(Reference the Architecture Diagram in README)_
 
@@ -92,7 +115,7 @@ _(Reference the Architecture Diagram in README)_
 
 ---
 
-## Slide 7: Live Demo
+## Slide 8: Live Demo
 
 ### What we will show
 
@@ -104,7 +127,7 @@ _(Reference the Architecture Diagram in README)_
 
 ---
 
-## Slide 8: Conclusion
+## Slide 9: Conclusion
 
 - **EtherX Sentinel** represents the future of adaptive application security.
 - It learns, evolves, and protects without manual intervention.
