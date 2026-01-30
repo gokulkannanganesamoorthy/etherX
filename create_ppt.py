@@ -55,6 +55,16 @@ def create_presentation():
         "Result: <10ms inference latency."
     ])
 
+    # Slide 4: Technical Deep Dive
+    add_slide(prs, "Technical Deep Dive: Under the Hood", [
+        "1. The AI Model: PyTorch Autoencoder (Compression Network).",
+        "2. Embedding: 'all-MiniLM-L6-v2' (384-d Vector Space).",
+        "3. Training Data: 'benign_traffic.txt' (Learns Normality).",
+        "4. Risk Analysis (JSON Brain):",
+        "   - reconstruction_error: >0.02 = Anomaly (Zero-Day).",
+        "   - neural_anomaly: Boolean flag for high-confidence blocks."
+    ])
+
     # Slide 4: Key Innovations
     add_slide(prs, "Key Innovations", [
         "Holographic Dashboard: Real-time, WebSocket-powered Neural Grid UI.",

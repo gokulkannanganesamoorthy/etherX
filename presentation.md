@@ -42,7 +42,38 @@ _Presenter: Gokul Kannan Ganesamoorthy_
 
 ---
 
-## Slide 4: Key Innovations
+---
+
+## Slide 4: Technical Deep Dive
+
+### Under the Hood
+
+**1. The AI Model**
+
+- **Architecture**: PyTorch Autoencoder (Compression/Decompression Network).
+- **Embedding Layer**: `sentence-transformers` (**all-MiniLM-L6-v2**) converts HTTP payloads into a 384-dimensional vector space.
+- **Training Data**: `benign_traffic.txt` (Only "safe" traffic). The model learns _normality_.
+
+**2. The JSON Brain (Risk Analysis)**
+Every request generates a detailed forensic report:
+
+```json
+{
+  "risk_score": 85.4,
+  "action": "BLOCK",
+  "risk_details": {
+    "neural_anomaly": true,
+    "reconstruction_error": 0.04521,
+    "signature_match": "union select"
+  }
+}
+```
+
+- **Reconstruction Error**: The "surprise" factor. High error (>0.02) means the model has never seen this pattern before (Zero-Day).
+
+---
+
+## Slide 5: Key Innovations
 
 - **Holographic Dashboard**: A real-time, WebSocket-powered "Neural Grid" UI that visualized the AI's decision-making process.
 - **Live Threat Intel**: Active monitoring of SQLi, XSS, and Neural Anomalies.
@@ -51,7 +82,7 @@ _Presenter: Gokul Kannan Ganesamoorthy_
 
 ---
 
-## Slide 5: Architecture
+## Slide 6: Architecture
 
 _(Reference the Architecture Diagram in README)_
 
@@ -61,7 +92,7 @@ _(Reference the Architecture Diagram in README)_
 
 ---
 
-## Slide 6: Live Demo
+## Slide 7: Live Demo
 
 ### What we will show
 
@@ -73,7 +104,7 @@ _(Reference the Architecture Diagram in README)_
 
 ---
 
-## Slide 7: Conclusion
+## Slide 8: Conclusion
 
 - **EtherX Sentinel** represents the future of adaptive application security.
 - It learns, evolves, and protects without manual intervention.
